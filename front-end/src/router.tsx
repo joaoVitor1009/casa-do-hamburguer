@@ -8,7 +8,7 @@ import PublicRoute from "./components/PublicRoute";
 
 const Layout = () => {
   return (
-    <div className="flex h-screen flex-col bg-[#161410]">
+    <div className="flex min-h-screen flex-col bg-[#161410]">
       <Header />
       <Outlet />
     </div>
@@ -34,7 +34,7 @@ export const router = createBrowserRouter([
     path: "/login",
     element: (
       <PublicRoute>
-        <Login />,
+        <Login />
       </PublicRoute>
     ),
   },

@@ -7,6 +7,8 @@ export const login = async (req: Request, resp: Response) => {
   try {
     const { email, password } = req.body;
 
+    const emailLower = email.toLowerCase();
+
     if (!email || !password) {
       resp.status(400).json({
         message: "Bad request, Entering email and password is required.",
@@ -15,7 +17,7 @@ export const login = async (req: Request, resp: Response) => {
     }
 
     const user = await prisma.user.findFirst({
-      where: { email: email },
+      where: { email: emailLower },
     });
 
     if (!user) {
@@ -57,6 +59,8 @@ export const register = async (req: Request, resp: Response) => {
   try {
     const { name, email, password, cep } = req.body;
 
+    const emailLower = email.toLowerCase();
+
     if (!name || !email || !password || !cep) {
       resp
         .status(400)
@@ -67,7 +71,7 @@ export const register = async (req: Request, resp: Response) => {
     const hash = await bcrypt.hash(password, 10);
 
     const userExists = await prisma.user.findFirst({
-      where: { email: email },
+      where: { email: emailLower },
     });
 
     if (userExists?.email) {
@@ -76,7 +80,7 @@ export const register = async (req: Request, resp: Response) => {
     }
 
     const newUser = await prisma.user.create({
-      data: { name: name, email: email, password: hash, cep: cep },
+      data: { name: name, email: emailLower, password: hash, cep: cep },
     });
 
     resp.status(201).json(newUser);

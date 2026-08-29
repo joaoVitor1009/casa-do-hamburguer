@@ -41,13 +41,13 @@ const home = () => {
 
   useEffect(() => {
     getProduct();
-  });
+  }, []);
 
   return (
     <div className="mx-auto w-full px-3 text-[#F2DAAC] md:w-184.25 md:px-0">
       <div className="flex justify-center gap-2 py-2 md:justify-start md:py-3">
         <Button
-          title="Hamburguer"
+          title="Hamburguers"
           variant={getCategory("Burgers")}
           onClick={() => handleChangeCategory("Burgers")}
         />
@@ -76,6 +76,7 @@ const home = () => {
             price={product.price}
             category={product.category}
             key={product.price}
+            getProducts={getProduct}
           />
         ))}
       </div>

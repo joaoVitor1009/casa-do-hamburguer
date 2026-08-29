@@ -1,7 +1,8 @@
 import { ShoppingBag } from "lucide-react";
 import type { ProductInterface } from "../types/Product";
 import { formatterPrice } from "../utils/FormatterPrice";
-
+import { UserContext } from "../contexts/UserContext";
+import { useContext } from "react";
 const Product = ({
   id,
   name,
@@ -9,10 +10,37 @@ const Product = ({
   price,
   img,
   category,
+  getProducts,
 }: ProductInterface) => {
   const imagem = () => {
     return "./" + img;
   };
+
+  const handleDeleteProduct = async (id: any) => {
+    try {
+      const rotaDelete = " http://localhost:3000/deleteProduct/" + id;
+
+      if (!rotaDelete) {
+        console.log("Sem id enviado");
+        return;
+      }
+
+      const response = await fetch(rotaDelete, {
+        method: "DELETE",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        console.log("Erro ao realizar a operação");
+        return;
+      }
+    } catch (e) {
+      console.log(e);
+      return;
+    }
+  };
+
+  const { user } = useContext(UserContext);
 
   return (
     <div>
@@ -23,9 +51,19 @@ const Product = ({
           className="h-20.75 w-25.75 rounded-sm md:h-41.5 md:w-50"
         />
         <div className="flex w-full flex-col">
-          <p className="text-sm font-bold text-white uppercase md:text-lg">
-            {name}
-          </p>
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-bold text-white uppercase md:text-lg">
+              {name}
+            </p>
+            {user?.admin && (
+              <div
+                className="flex cursor-pointer items-center rounded-md border px-0.5 text-sm text-red-600 uppercase"
+                onClick={() => handleDeleteProduct(id)}
+              >
+                Deletar
+              </div>
+            )}
+          </div>
           <p className="flex-1 text-xs text-[#848484] md:text-lg">
             {description}
           </p>

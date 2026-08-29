@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router";
 import { UserContext } from "../contexts/UserContext";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import {
   LogOut,
   ShoppingCart,
@@ -8,9 +8,12 @@ import {
   ScrollText,
   Plus,
 } from "lucide-react";
+import Cart from "./Cart";
 
 const Header = () => {
   const { user, setUser } = useContext(UserContext);
+  const [showCart, setShowCart] = useState<boolean>(false);
+  const cartRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
 
   const handleAuthUser = async () => {
@@ -51,6 +54,22 @@ const Header = () => {
     handleAuthUser();
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (cartRef.current && !cartRef.current.contains(event.target as Node)) {
+        setShowCart(false);
+      }
+    };
+
+    if (showCart) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showCart]);
+
   const getNavItemClass = (path: string) => {
     const baseClass =
       "flex h-8.75 w-8.75 cursor-pointer items-center justify-center rounded-md border";
@@ -62,10 +81,15 @@ const Header = () => {
   };
 
   return (
-    <div className="items-center bg-[#161410]">
+    <div className="bg-[#161410]">
+      {showCart && (
+        <div ref={cartRef}>
+          <Cart setShowCart={setShowCart} showCart={showCart} />
+        </div>
+      )}
       <div className="mx-auto flex w-full items-center justify-between p-3 md:w-184.25 md:p-0">
         <Link to={"/"}>
-          <img src="./public/logo.png" alt="" />
+          <img src="./public/logo.png" alt="" className="h-auto w-24" />
         </Link>
 
         {user ? (
@@ -89,12 +113,17 @@ const Header = () => {
                 </Link>
               </div>
             )}
-            <div className="relative cursor-pointer">
-              <ShoppingCart size={24} />
-              <p className="absolute -top-4 -right-4 flex h-5 w-5 items-center justify-center rounded-full bg-[#F2DAAC] text-[#161410]">
-                1
-              </p>
-            </div>
+            {!showCart && (
+              <div className="relative cursor-pointer">
+                <ShoppingCart
+                  size={24}
+                  onClick={() => setShowCart(!showCart)}
+                />
+                <p className="absolute -top-4 -right-4 flex h-5 w-5 items-center justify-center rounded-full bg-[#F2DAAC] text-[#161410]">
+                  1
+                </p>
+              </div>
+            )}
 
             <div className="flex items-center gap-2">
               <p>Olá, {user?.name} </p>

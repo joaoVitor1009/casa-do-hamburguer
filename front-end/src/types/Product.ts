@@ -5,4 +5,5 @@ export interface ProductInterface {
   price: number;
   img: String;
   category: String;
+  getProducts: () => Promise<void>;
 }
