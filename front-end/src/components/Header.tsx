@@ -113,17 +113,13 @@ const Header = () => {
                 </Link>
               </div>
             )}
-            {!showCart && (
-              <div className="relative cursor-pointer">
-                <ShoppingCart
-                  size={24}
-                  onClick={() => setShowCart(!showCart)}
-                />
-                <p className="absolute -top-4 -right-4 flex h-5 w-5 items-center justify-center rounded-full bg-[#F2DAAC] text-[#161410]">
-                  1
-                </p>
-              </div>
-            )}
+
+            <div className="relative cursor-pointer">
+              <ShoppingCart size={24} onClick={() => setShowCart(!showCart)} />
+              <p className="absolute -top-4 -right-4 flex h-5 w-5 items-center justify-center rounded-full bg-[#F2DAAC] text-[#161410]">
+                1
+              </p>
+            </div>
 
             <div className="flex items-center gap-2">
               <p>Olá, {user?.name} </p>

@@ -83,7 +83,24 @@ export const register = async (req: Request, resp: Response) => {
       data: { name: name, email: emailLower, password: hash, cep: cep },
     });
 
-    resp.status(201).json(newUser);
+    console.log(newUser);
+    if (!process.env.JWT_SECRET) {
+      return;
+    }
+
+    const userInfos = {
+      id: newUser.id,
+      name: newUser.name,
+      email: newUser.email,
+      cep: newUser.cep,
+      admin: newUser.admin,
+    };
+    console.log(userInfos);
+
+    const token = jwt.sign(userInfos, process.env.JWT_SECRET);
+
+    resp.cookie("user", token, { maxAge: 1800000 });
+    resp.status(201).json(userInfos);
   } catch (e) {
     resp.status(500).json({ message: "Server error" });
     console.log(e);

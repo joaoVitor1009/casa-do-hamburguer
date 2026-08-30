@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Input from "../components/Input";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import Button from "../components/Button";
+import { UserContext } from "../contexts/UserContext";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -10,6 +11,10 @@ const Register = () => {
   const [checksenha, setCheckSenha] = useState("");
   const [cep, setCep] = useState("");
   const [error, setError] = useState("");
+
+  const navigate = useNavigate();
+
+  const { setUser } = useContext(UserContext);
 
   async function enviar(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -30,6 +35,7 @@ const Register = () => {
         method: "POST",
         headers: { "Content-type": "application/json" },
         body: JSON.stringify({ name, email, password, cep }),
+        credentials: "include",
       });
 
       switch (response.status) {
@@ -47,6 +53,9 @@ const Register = () => {
           setCheckSenha("");
           setCep("");
           setError("");
+          const data = await response.json();
+          navigate("/");
+          setUser(data);
           break;
         case 500:
           setError("Tente novamente mais tarde");

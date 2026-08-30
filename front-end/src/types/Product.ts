@@ -1,9 +1,9 @@
 export interface ProductInterface {
-  id: String;
-  name: String;
-  description: String;
+  id: string;
+  name: string;
+  description: string;
   price: number;
-  img: String;
-  category: String;
-  getProducts: () => Promise<void>;
+  img: string;
+  category: string;
+  getProducts?: () => Promise<void>;
 }
