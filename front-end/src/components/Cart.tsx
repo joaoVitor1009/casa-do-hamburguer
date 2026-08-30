@@ -15,7 +15,7 @@ const Cart = ({ setShowCart, showCart }: cartTypes) => {
 
   const getCartItems = async () => {
     try {
-      const response = await fetch("http://localhost:3000/", {
+      const response = await fetch("http://localhost:3000/getItems", {
         credentials: "include",
       });
 

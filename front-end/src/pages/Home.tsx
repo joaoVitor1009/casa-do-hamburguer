@@ -75,7 +75,7 @@ const home = () => {
             name={product.name}
             price={product.price}
             category={product.category}
-            key={product.price}
+            key={product.id}
             getProducts={getProduct}
           />
         ))}

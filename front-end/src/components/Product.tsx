@@ -69,7 +69,10 @@ const Product = ({
           </p>
           <div className="flex items-center justify-end gap-2 text-sm text-[#F2DAAC] md:text-lg">
             <p>{formatterPrice(price)}</p>
-            <ShoppingBag className="size-3.5 cursor-pointer text-white md:size-4.5" />
+            <ShoppingBag
+              className="size-3.5 cursor-pointer text-white md:size-4.5"
+              onClick={() => alert(id)}
+            />
           </div>
         </div>
       </div>
