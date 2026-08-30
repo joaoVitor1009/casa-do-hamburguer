@@ -5,5 +5,8 @@ export interface ProductInterface {
   price: number;
   img: string;
   category: string;
-  getProducts?: () => Promise<void>;
 }
+
+export type Productpros = ProductInterface & {
+  getProducts: () => Promise<void>;
+};

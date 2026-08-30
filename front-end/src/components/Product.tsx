@@ -1,5 +1,5 @@
 import { ShoppingBag } from "lucide-react";
-import type { ProductInterface } from "../types/Product";
+import type { Productpros } from "../types/Product";
 import { formatterPrice } from "../utils/FormatterPrice";
 import { UserContext } from "../contexts/UserContext";
 import { useContext } from "react";
@@ -11,7 +11,7 @@ const Product = ({
   img,
   category,
   getProducts,
-}: ProductInterface) => {
+}: Productpros) => {
   const imagem = () => {
     return "./" + img;
   };
