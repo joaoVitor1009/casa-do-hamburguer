@@ -6,3 +6,8 @@ export interface CartItemInterface {
   productId: string;
   productid: ProductInterface;
 }
+
+export type CartItemsTypeContext = {
+  cartItems: CartItemInterface[];
+  setCartItems: React.Dispatch<React.SetStateAction<CartItemInterface[]>>;
+};

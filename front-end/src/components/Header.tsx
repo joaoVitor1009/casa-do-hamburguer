@@ -9,12 +9,15 @@ import {
   Plus,
 } from "lucide-react";
 import Cart from "./Cart";
+import { CartItemContext } from "../contexts/CartItemContext";
 
 const Header = () => {
   const { user, setUser } = useContext(UserContext);
   const [showCart, setShowCart] = useState<boolean>(false);
   const cartRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
+
+  const { cartItems } = useContext(CartItemContext);
 
   const handleAuthUser = async () => {
     try {
@@ -117,7 +120,7 @@ const Header = () => {
             <div className="relative cursor-pointer">
               <ShoppingCart size={24} onClick={() => setShowCart(!showCart)} />
               <p className="absolute -top-4 -right-4 flex h-5 w-5 items-center justify-center rounded-full bg-[#F2DAAC] text-[#161410]">
-                1
+                {cartItems.length}
               </p>
             </div>
 

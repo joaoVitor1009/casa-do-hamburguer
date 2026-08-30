@@ -1,8 +1,8 @@
 import { X } from "lucide-react";
 import Button from "./Button";
 import CartItem from "./CartItem";
-import { useEffect, useState } from "react";
-import type { CartItemInterface } from "../types/CartItem";
+import { useContext, useEffect } from "react";
+import { CartItemContext } from "../contexts/CartItemContext";
 
 type cartTypes = {
   setShowCart: React.Dispatch<React.SetStateAction<boolean>>;
@@ -10,7 +10,8 @@ type cartTypes = {
 };
 
 const Cart = ({ setShowCart, showCart }: cartTypes) => {
-  const [carItems, setCartItems] = useState<CartItemInterface[]>([]);
+  // const [carItems, setCartItems] = useState<CartItemInterface[]>([]);
+  const { cartItems, setCartItems } = useContext(CartItemContext);
 
   const getCartItems = async () => {
     try {
@@ -41,7 +42,7 @@ const Cart = ({ setShowCart, showCart }: cartTypes) => {
         <p className="font-bold uppercase">meu carrinho</p>
       </div>
       <div className="mt-10 flex flex-1 flex-col gap-2">
-        {carItems.map((item) => (
+        {cartItems.map((item) => (
           <CartItem
             title={item.productid.name}
             price={item.productid.price}
