@@ -15,17 +15,19 @@ model User {
   password  String
   admin     Boolean    @default(false)
   cartitems CartItem[]
+  orders    Order[]
 }
 
 model Product {
-  id          String     @id @default(uuid())
+  id          String      @id @default(uuid())
   name        String
   description String
   price       Int
   img         String
-  createdAt   DateTime   @default(now())
+  createdAt   DateTime    @default(now())
   category    String
   cartitems   CartItem[]
+  orderItems  OrderItem[]
 }
 
 model CartItem {
@@ -35,4 +37,24 @@ model CartItem {
   quantity  Int     @default(1)
   productid Product @relation(fields: [productId], references: [id])
   userid    User    @relation(fields: [userId], references: [id])
+}
+
+model Order {
+  id        String      @id @default(uuid())
+  status    String      @default("Pendente")
+  total     Int
+  createdAt DateTime    @default(now())
+  userId    String
+  user      User        @relation(fields: [userId], references: [id])
+  items     OrderItem[]
+}
+
+model OrderItem {
+  id        String  @id @default(uuid())
+  quantity  Int
+  price     Int
+  productId String
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
 }

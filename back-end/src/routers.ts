@@ -6,6 +6,7 @@ import {
   createCartItem,
   getCartitems,
 } from "./controller/cartItem-controller.js";
+import { createOrder } from "./controller/order-controller.js";
 
 export const router = Router();
 
@@ -19,6 +20,9 @@ router.get("/me", authMiddleware, auth);
 router.get("/getProduct", getProduct);
 router.delete("/deleteProduct/:id", authMiddleware, deleteProduct);
 
-//Cart/Carrinho
+//Rotas Cart/Carrinho
 router.get("/getItems", authMiddleware, getCartitems);
 router.post("/createCartitem", authMiddleware, createCartItem);
+
+//Rotas Orders
+router.post("/createOrders", authMiddleware, createOrder);

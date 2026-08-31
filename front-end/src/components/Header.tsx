@@ -30,6 +30,9 @@ const Header = () => {
         return;
       }
       const data = await response.json();
+      if (!data) {
+        return;
+      }
       setUser(data);
       console.log(data);
     } catch (e) {

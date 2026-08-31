@@ -27,6 +27,11 @@ const home = () => {
     try {
       const response = await fetch("http://localhost:3000/getProduct");
 
+      if (!response.ok) {
+        setProduct([]);
+        return;
+      }
+
       const data = await response.json();
       setProduct(data);
     } catch (e) {

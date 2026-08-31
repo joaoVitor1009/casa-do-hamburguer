@@ -9,7 +9,7 @@ export const authMiddleware = (
   const { user } = req.cookies;
 
   if (!user) {
-    resp.json("Sem usuario detectado");
+    resp.status(400).json("Sem usuario detectado");
     return;
   }
 
