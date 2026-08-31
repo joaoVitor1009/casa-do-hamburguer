@@ -17,7 +17,7 @@ const Header = () => {
   const cartRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
 
-  const { cartItems } = useContext(CartItemContext);
+  const { cartItems, getCartItems } = useContext(CartItemContext);
 
   const handleAuthUser = async () => {
     try {
@@ -55,6 +55,7 @@ const Header = () => {
 
   useEffect(() => {
     handleAuthUser();
+    getCartItems();
   }, []);
 
   useEffect(() => {
@@ -82,6 +83,12 @@ const Header = () => {
       return baseClass;
     }
   };
+
+  let cartQuantity = 0;
+
+  for (let i = 0; i < cartItems.length; i++) {
+    cartQuantity += cartItems[i].quantity;
+  }
 
   return (
     <div className="bg-[#161410]">
@@ -120,7 +127,7 @@ const Header = () => {
             <div className="relative cursor-pointer">
               <ShoppingCart size={24} onClick={() => setShowCart(!showCart)} />
               <p className="absolute -top-4 -right-4 flex h-5 w-5 items-center justify-center rounded-full bg-[#F2DAAC] text-[#161410]">
-                {cartItems.length}
+                {cartQuantity}
               </p>
             </div>
 

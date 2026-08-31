@@ -19,8 +19,9 @@ const Cart = ({ setShowCart, showCart }: cartTypes) => {
         credentials: "include",
       });
 
-      if (!response) {
+      if (!response.ok) {
         console.log("erro ao realizar a requisição");
+        return;
       }
 
       const data = await response.json();
@@ -48,6 +49,7 @@ const Cart = ({ setShowCart, showCart }: cartTypes) => {
             price={item.productid.price}
             img={item.productid.img}
             id={item.productid.id}
+            quantity={item.quantity}
           />
         ))}
       </div>

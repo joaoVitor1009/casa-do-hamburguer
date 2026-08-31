@@ -6,9 +6,10 @@ type CartTypes = {
   price: number;
   img: string;
   id: string;
+  quantity: number;
 };
 
-const CartItem = ({ title, price, img, id }: CartTypes) => {
+const CartItem = ({ title, price, img, id, quantity }: CartTypes) => {
   return (
     <div className="flex items-center gap-3">
       <img src={img} alt="" className="h-20.75 w-25 rounded-md" />
@@ -20,7 +21,7 @@ const CartItem = ({ title, price, img, id }: CartTypes) => {
         <div className="mt-1">
           <div className="flex items-center gap-2">
             <ChevronLeft className="cursor-pointer rounded-md bg-[#C92A0E] p-1 text-white" />
-            <p className="font-bold">1</p>
+            <p className="font-bold">{quantity}</p>
             <ChevronRight className="cursor-pointer rounded-md bg-[#C92A0E] p-1 text-white" />
           </div>
         </div>

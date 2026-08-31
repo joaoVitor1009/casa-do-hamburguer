@@ -3,6 +3,7 @@ import type { Productpros } from "../types/Product";
 import { formatterPrice } from "../utils/FormatterPrice";
 import { UserContext } from "../contexts/UserContext";
 import { useContext } from "react";
+import { CartItemContext } from "../contexts/CartItemContext";
 const Product = ({
   id,
   name,
@@ -12,13 +13,15 @@ const Product = ({
   category,
   getProducts,
 }: Productpros) => {
+  const { user } = useContext(UserContext);
+  const { getCartItems } = useContext(CartItemContext);
   const imagem = () => {
     return "./" + img;
   };
 
   const handleDeleteProduct = async (id: any) => {
     try {
-      const rotaDelete = " http://localhost:3000/deleteProduct/" + id;
+      const rotaDelete = "http://localhost:3000/deleteProduct/" + id;
 
       if (!rotaDelete) {
         console.log("Sem id enviado");
@@ -40,7 +43,25 @@ const Product = ({
     }
   };
 
-  const { user } = useContext(UserContext);
+  const newCartItem = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/createCartitem", {
+        method: "POST",
+        headers: { "Content-type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ productId: id }),
+      });
+      if (!response.ok) {
+        console.log("Deu ruim");
+        return;
+      }
+      getCartItems();
+      const data = await response.json();
+      console.log(data);
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   return (
     <div>
@@ -71,7 +92,7 @@ const Product = ({
             <p>{formatterPrice(price)}</p>
             <ShoppingBag
               className="size-3.5 cursor-pointer text-white md:size-4.5"
-              onClick={() => alert(id)}
+              onClick={() => newCartItem()}
             />
           </div>
         </div>

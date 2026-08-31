@@ -5,9 +5,11 @@ export interface CartItemInterface {
   userId: string;
   productId: string;
   productid: ProductInterface;
+  quantity: number;
 }
 
 export type CartItemsTypeContext = {
   cartItems: CartItemInterface[];
   setCartItems: React.Dispatch<React.SetStateAction<CartItemInterface[]>>;
+  getCartItems: () => Promise<void>;
 };

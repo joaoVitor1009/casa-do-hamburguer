@@ -23,6 +23,7 @@ export async function createCartItem(req: Request, resp: Response) {
 
     if (!productId) {
       resp.status(400).json({ message: "Id de produto não adicionado" });
+      return;
     }
 
     const ExistsInCart = await prisma.cartItem.findFirst({
