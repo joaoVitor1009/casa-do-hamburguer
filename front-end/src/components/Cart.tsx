@@ -3,6 +3,7 @@ import Button from "./Button";
 import CartItem from "./CartItem";
 import { useContext, useEffect } from "react";
 import { CartItemContext } from "../contexts/CartItemContext";
+import { base } from "../utils/FormatterPrice";
 
 type cartTypes = {
   setShowCart: React.Dispatch<React.SetStateAction<boolean>>;
@@ -32,6 +33,30 @@ const Cart = ({ setShowCart, showCart }: cartTypes) => {
     }
   };
 
+  async function handleCreateOrder() {
+    try {
+      const response = await fetch(base + "createOrders", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (cartItems.length === 0) {
+        console.log("Carrinho vazio");
+        return;
+      }
+
+      if (!response.ok) {
+        console.log("Erro ao fechar pedido");
+        return;
+      }
+      console.log("Pedido realizado com sucesso");
+      getCartItems();
+      setShowCart(false);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   useEffect(() => {
     getCartItems();
   }, []);
@@ -53,7 +78,7 @@ const Cart = ({ setShowCart, showCart }: cartTypes) => {
           />
         ))}
       </div>
-      <Button title="Finalizar pedido" />
+      <Button title="Finalizar pedido" onClick={() => handleCreateOrder()} />
     </div>
   );
 };
