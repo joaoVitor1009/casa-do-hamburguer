@@ -55,3 +55,49 @@ export const deleteProduct = async (
     resp.status(500).json({ message: "Server Error" });
   }
 };
+
+export async function createProduct(req: Request, resp: Response) {
+  try {
+    const { name, description, price, category } = req.body;
+
+    const image = req.file;
+
+    if (!image) {
+      resp.status(400).json({
+        message: "Imagem do produto é obrigatória",
+      });
+
+      return;
+    }
+
+    const productExists = await prisma.product.findFirst({
+      where: { name: name },
+    });
+
+    if (productExists) {
+      resp.status(400).json({ message: "Produto já existe" });
+      return;
+    }
+
+    const imagePath = `/${image.filename}`;
+    const priceNumber = Number(price);
+
+    const product = await prisma.product.create({
+      data: {
+        name: name,
+        description: description,
+        price: priceNumber,
+        img: imagePath,
+        category: category,
+      },
+    });
+
+    resp.status(201).json(product);
+  } catch (e) {
+    console.error("ERRO AO CRIAR PRODUTO:", e);
+
+    resp.status(500).json({
+      message: "Server Error",
+    });
+  }
+}

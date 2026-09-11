@@ -10,10 +10,12 @@ import {
 } from "lucide-react";
 import Cart from "./Cart";
 import { CartItemContext } from "../contexts/CartItemContext";
+import CardProduct from "./CardProduct";
 
 const Header = () => {
   const { user, setUser } = useContext(UserContext);
   const [showCart, setShowCart] = useState<boolean>(false);
+  const [showCartProduct, setShowCartProduct] = useState<boolean>(false);
   const cartRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
 
@@ -100,9 +102,23 @@ const Header = () => {
           <Cart setShowCart={setShowCart} showCart={showCart} />
         </div>
       )}
+      {showCartProduct && (
+        <div>
+          <CardProduct
+            setShowCartProduct={setShowCartProduct}
+            showCartProduct={showCartProduct}
+          />
+        </div>
+      )}
+
       <div className="mx-auto flex w-full items-center justify-between p-3 md:w-184.25 md:p-0">
         <Link to={"/"}>
-          <img src="./public/logo.png" alt="" className="h-auto w-24" />
+          <img
+            src="/logo.png"
+            alt=""
+            className="h-auto w-24"
+            onClick={() => setShowCartProduct(false)}
+          />
         </Link>
 
         {user ? (
@@ -110,17 +126,26 @@ const Header = () => {
             {user.admin && (
               <div className="hidden items-center gap-2 text-[#F2DAAC] md:flex">
                 <Link to={"/"}>
-                  <div className={getNavItemClass("/")}>
+                  <div
+                    className={getNavItemClass("/")}
+                    onClick={() => setShowCartProduct(false)}
+                  >
                     <SquareMenu size={20} />
                   </div>
                 </Link>
                 <Link to={"/orders"}>
-                  <div className={getNavItemClass("/orders")}>
+                  <div
+                    className={getNavItemClass("/orders")}
+                    onClick={() => setShowCartProduct(false)}
+                  >
                     <ScrollText size={20} />
                   </div>
                 </Link>
-                <Link to={""}>
-                  <div className="flex h-8.75 w-8.75 cursor-pointer items-center justify-center rounded-md border">
+                <Link to={"/orders/new"}>
+                  <div
+                    className={getNavItemClass("/orders/new")}
+                    onClick={() => setShowCartProduct(!showCartProduct)}
+                  >
                     <Plus size={20} />
                   </div>
                 </Link>

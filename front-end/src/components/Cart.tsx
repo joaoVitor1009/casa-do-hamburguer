@@ -75,6 +75,7 @@ const Cart = ({ setShowCart, showCart }: cartTypes) => {
             img={item.productid.img}
             id={item.productid.id}
             quantity={item.quantity}
+            getCartItems={getCartItems}
           />
         ))}
       </div>

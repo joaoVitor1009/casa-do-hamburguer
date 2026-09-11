@@ -7,9 +7,39 @@ type CartTypes = {
   img: string;
   id: string;
   quantity: number;
+  getCartItems: () => Promise<void>;
 };
 
-const CartItem = ({ title, price, img, id, quantity }: CartTypes) => {
+const CartItem = ({
+  title,
+  price,
+  img,
+  id,
+  quantity,
+  getCartItems,
+}: CartTypes) => {
+  async function handleDeleteItem(id: string) {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/deleteCartitem/${id}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        },
+      );
+
+      if (!response.ok) {
+        alert("Erro ao deletar item do carrinho");
+        return;
+      }
+
+      getCartItems();
+      return;
+    } catch (error) {
+      console.error("Error deleting item:", error);
+    }
+  }
+
   return (
     <div className="flex items-center gap-3">
       <img src={img} alt="" className="h-20.75 w-25 rounded-md" />
@@ -29,7 +59,7 @@ const CartItem = ({ title, price, img, id, quantity }: CartTypes) => {
       <Trash2
         className="size-5 cursor-pointer"
         onClick={() => {
-          alert(id);
+          handleDeleteItem(id);
         }}
       />
     </div>

@@ -56,3 +56,35 @@ export async function createCartItem(req: Request, resp: Response) {
     });
   }
 }
+
+export async function deleteCartItem(
+  req: Request<{ id: string }>,
+  resp: Response,
+) {
+  try {
+    const { user } = req;
+    const { id } = req.params;
+
+    const existingCartItem = await prisma.cartItem.findFirst({
+      where: { productId: id, userId: user.id },
+    });
+
+    console.log("Existing Cart Item:", existingCartItem);
+
+    if (!existingCartItem) {
+      resp.status(404).json({ message: "Item não encontrado no carrinho" });
+      return;
+    }
+
+    const cartItem = await prisma.cartItem.delete({
+      where: { id: existingCartItem.id },
+    });
+
+    resp.json(cartItem);
+  } catch (error) {
+    console.error(error);
+    resp.status(500).json({
+      message: "Erro ao deletar item do carrinho",
+    });
+  }
+}

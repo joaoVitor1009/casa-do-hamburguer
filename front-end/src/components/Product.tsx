@@ -16,7 +16,7 @@ const Product = ({
   const { user } = useContext(UserContext);
   const { getCartItems } = useContext(CartItemContext);
   const imagem = () => {
-    return "./" + img;
+    return img;
   };
 
   const handleDeleteProduct = async (id: any) => {
@@ -35,6 +35,11 @@ const Product = ({
 
       if (!response.ok) {
         console.log("Erro ao realizar a operação");
+        return;
+      }
+
+      if (response.ok) {
+        getProducts();
         return;
       }
     } catch (e) {

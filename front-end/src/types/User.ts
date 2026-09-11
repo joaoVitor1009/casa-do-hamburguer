@@ -1,8 +1,8 @@
 export interface UserInterface {
-  id: String;
-  name: String;
-  email: String;
-  cep: String;
+  id: string;
+  name: string;
+  email: string;
+  cep: string;
   admin: boolean;
 }
 

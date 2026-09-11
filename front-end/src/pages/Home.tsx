@@ -71,7 +71,7 @@ const home = () => {
       <p className="mt-2 mb-2 text-[14px] font-bold uppercase md:text-[18px]">
         {category}
       </p>
-      <div className="flex flex-col gap-1.5 md:gap-3">
+      <div className="flex flex-col gap-3 md:gap-3">
         {filteredProduct.map((product) => (
           <Product
             description={product.description}
