@@ -31,23 +31,27 @@ model Product {
 }
 
 model CartItem {
-  id        String  @id @default(uuid())
+  id        String   @id @default(uuid())
   userId    String
   productId String
-  quantity  Int     @default(1)
-  productid Product @relation(fields: [productId], references: [id])
-  userid    User    @relation(fields: [userId], references: [id])
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+  productid Product  @relation(fields: [productId], references: [id])
+  userid    User     @relation(fields: [userId], references: [id])
 }
 
 model Order {
-  id            String      @id @default(uuid())
-  status        String      @default("Pendente")
-  total         Int
-  createdAt     DateTime    @default(now())
-  userId        String
-  deliveredTime DateTime?
-  user          User        @relation(fields: [userId], references: [id])
-  items         OrderItem[]
+  id             String      @id @default(uuid())
+  status         String      @default("Pendente")
+  total          Int
+  createdAt      DateTime    @default(now())
+  userId         String
+  deliveredTime  DateTime?
+  formaPagamento String      @default("Dinheiro")
+  observacao     String?
+  tipoEntrega    String      @default("Entrega")
+  user           User        @relation(fields: [userId], references: [id])
+  items          OrderItem[]
 }
 
 model OrderItem {

@@ -4,6 +4,19 @@ import { prisma } from "../db.js";
 export async function createOrder(req: Request, resp: Response) {
   try {
     const { user } = req;
+    const {
+      metodoPagamento,
+      observacoes,
+      tipoEntrega,
+      totalFinal,
+      opcaoEntrega,
+    } = req.body;
+
+    if (!metodoPagamento && !tipoEntrega) {
+      return resp.status(400).json({
+        message: "Forma de pagamento e tipo de entrega são obrigatórios",
+      });
+    }
 
     const cartItems = await prisma.cartItem.findMany({
       where: { userId: user.id },
@@ -14,17 +27,15 @@ export async function createOrder(req: Request, resp: Response) {
       return resp.status(400).json({ message: "Carrinho vazio" });
     }
 
-    let total = 0;
-    for (let i = 0; i < cartItems.length; i++) {
-      const item = cartItems[i];
-      if (!item) continue;
-      total += item.productid.price * item.quantity;
-    }
+    const total = Math.round(totalFinal);
 
     const order = await prisma.order.create({
       data: {
         total: total,
         userId: user.id,
+        formaPagamento: metodoPagamento || opcaoEntrega,
+        observacao: observacoes,
+        tipoEntrega: tipoEntrega,
         items: {
           create: cartItems.map((item) => ({
             productId: item.productId,

@@ -40,6 +40,36 @@ const CartItem = ({
     }
   }
 
+  async function handleUpdateQuantity(id: string, newQuantity: number) {
+    try {
+      if (newQuantity > 10) {
+        alert("Quantidade máxima atingida");
+        return;
+      }
+      const response = await fetch(
+        `http://localhost:3000/updateCartItem/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ quantity: newQuantity }),
+          credentials: "include",
+        },
+      );
+
+      if (!response.ok) {
+        alert("Erro ao atualizar quantidade do item");
+        return;
+      }
+
+      getCartItems();
+      return;
+    } catch (error) {
+      console.error("Error updating quantity:", error);
+    }
+  }
+
   return (
     <div className="flex items-center gap-3">
       <img src={img} alt="" className="h-20.75 w-25 rounded-md" />
@@ -50,9 +80,22 @@ const CartItem = ({
         </p>
         <div className="mt-1">
           <div className="flex items-center gap-2">
-            <ChevronLeft className="cursor-pointer rounded-md bg-[#C92A0E] p-1 text-white" />
+            <ChevronLeft
+              className="cursor-pointer rounded-md bg-[#C92A0E] p-1 text-white"
+              onClick={() => {
+                handleUpdateQuantity(id, quantity - 1);
+                if (quantity <= 1) {
+                  handleDeleteItem(id);
+                }
+              }}
+            />
             <p className="font-bold">{quantity}</p>
-            <ChevronRight className="cursor-pointer rounded-md bg-[#C92A0E] p-1 text-white" />
+            <ChevronRight
+              className="cursor-pointer rounded-md bg-[#C92A0E] p-1 text-white"
+              onClick={() => {
+                handleUpdateQuantity(id, quantity + 1);
+              }}
+            />
           </div>
         </div>
       </div>

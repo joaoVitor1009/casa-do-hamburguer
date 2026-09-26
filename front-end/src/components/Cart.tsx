@@ -4,6 +4,7 @@ import CartItem from "./CartItem";
 import { useContext, useEffect } from "react";
 import { CartItemContext } from "../contexts/CartItemContext";
 import { base } from "../utils/FormatterPrice";
+import { useNavigate } from "react-router";
 
 type cartTypes = {
   setShowCart: React.Dispatch<React.SetStateAction<boolean>>;
@@ -13,6 +14,7 @@ type cartTypes = {
 const Cart = ({ setShowCart, showCart }: cartTypes) => {
   // const [carItems, setCartItems] = useState<CartItemInterface[]>([]);
   const { cartItems, setCartItems } = useContext(CartItemContext);
+  const navigate = useNavigate();
 
   const getCartItems = async () => {
     try {
@@ -57,6 +59,15 @@ const Cart = ({ setShowCart, showCart }: cartTypes) => {
     }
   }
 
+  const handleOrderReview = () => {
+    if (cartItems.length === 0) {
+      alert("Carrinho vazio");
+      return;
+    }
+    setShowCart(false);
+    navigate("/OrderReview");
+  };
+
   useEffect(() => {
     getCartItems();
   }, []);
@@ -68,18 +79,21 @@ const Cart = ({ setShowCart, showCart }: cartTypes) => {
         <p className="font-bold uppercase">meu carrinho</p>
       </div>
       <div className="mt-10 flex flex-1 flex-col gap-2">
-        {cartItems.map((item) => (
-          <CartItem
-            title={item.productid.name}
-            price={item.productid.price}
-            img={item.productid.img}
-            id={item.productid.id}
-            quantity={item.quantity}
-            getCartItems={getCartItems}
-          />
-        ))}
+        {cartItems.map((item) => {
+          return (
+            <CartItem
+              key={item.id}
+              title={item.productid.name}
+              price={item.productid.price}
+              img={item.productid.img}
+              id={item.productid.id}
+              quantity={item.quantity}
+              getCartItems={getCartItems}
+            />
+          );
+        })}
       </div>
-      <Button title="Finalizar pedido" onClick={() => handleCreateOrder()} />
+      <Button title="Revisar Pedido" onClick={handleOrderReview} />
     </div>
   );
 };

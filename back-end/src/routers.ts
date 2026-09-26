@@ -10,6 +10,7 @@ import {
   createCartItem,
   deleteCartItem,
   getCartitems,
+  updateCartItem,
 } from "./controller/cartItem-controller.js";
 import {
   createOrder,
@@ -41,6 +42,7 @@ router.post(
 router.get("/getItems", authMiddleware, getCartitems);
 router.post("/createCartitem", authMiddleware, createCartItem);
 router.delete("/deleteCartitem/:id", authMiddleware, deleteCartItem);
+router.put("/updateCartitem/:id", authMiddleware, updateCartItem);
 
 //Rotas Orders
 router.post("/createOrders", authMiddleware, createOrder);

@@ -8,6 +8,7 @@ export async function getCartitems(req: Request, resp: Response) {
     const cartitems = await prisma.cartItem.findMany({
       where: { userId: user.id },
       include: { productid: true },
+      orderBy: { createdAt: "asc" },
     });
 
     resp.json(cartitems);
@@ -85,6 +86,38 @@ export async function deleteCartItem(
     console.error(error);
     resp.status(500).json({
       message: "Erro ao deletar item do carrinho",
+    });
+  }
+}
+
+export async function updateCartItem(
+  req: Request<{ id: string }, {}, { quantity: number }>,
+  resp: Response,
+) {
+  try {
+    const { user } = req;
+    const { id } = req.params;
+    const { quantity } = req.body;
+
+    const existingCartItem = await prisma.cartItem.findFirst({
+      where: { productId: id, userId: user.id },
+    });
+
+    if (!existingCartItem) {
+      resp.status(404).json({ message: "Item não encontrado no carrinho" });
+      return;
+    }
+
+    const cartItem = await prisma.cartItem.update({
+      where: { id: existingCartItem.id },
+      data: { quantity: quantity },
+    });
+
+    resp.json(cartItem);
+  } catch (error) {
+    console.error(error);
+    resp.status(500).json({
+      message: "Erro ao atualizar quantidade do item no carrinho",
     });
   }
 }

@@ -4,7 +4,9 @@ import Register from "./pages/Register";
 import Home from "./pages/Home";
 import Header from "./components/Header";
 import Orders from "./pages/Orders";
+import OrderReview from "./pages/OrderReview";
 import PublicRoute from "./components/PublicRoute";
+import Payment from "./pages/Payment";
 
 const Layout = () => {
   return (
@@ -30,6 +32,14 @@ export const router = createBrowserRouter([
       {
         path: "/orders/new",
         element: <Orders />,
+      },
+      {
+        path: "/OrderReview",
+        element: <OrderReview />,
+      },
+      {
+        path: "/Payment",
+        element: <Payment />,
       },
     ],
   },
