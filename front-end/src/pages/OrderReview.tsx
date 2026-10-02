@@ -23,7 +23,7 @@ const OrderReview = () => {
     "entrega",
   );
 
-  const [observacoes, setObservacoes] = useState("");
+  const [observacoes, setObservacoes] = useState("Nenhuma Observação");
 
   const navigate = useNavigate();
 
@@ -186,7 +186,6 @@ const OrderReview = () => {
                 name="observacoes"
                 id="observacoes"
                 onChange={(e) => setObservacoes(e.target.value)}
-                value={observacoes}
                 placeholder="Alguma observação? (Opcional)"
                 className="h-24 w-full resize-none scrollbar-thin scrollbar-thumb-[#F2DAAC]/40 scrollbar-track-transparent rounded-lg border border-[#F2DAAC]/30 bg-transparent p-3 text-xs text-[#F2DAAC] placeholder-[#6b665c] focus:border-[#F2DAAC] focus:outline-none"
               />

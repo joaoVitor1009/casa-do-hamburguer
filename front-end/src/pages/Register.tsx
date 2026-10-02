@@ -3,12 +3,14 @@ import Input from "../components/Input";
 import { Link, useNavigate } from "react-router";
 import Button from "../components/Button";
 import { UserContext } from "../contexts/UserContext";
+import { Eye, EyeOff } from "lucide-react";
 
 const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setSenha] = useState("");
   const [checksenha, setCheckSenha] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [cep, setCep] = useState("");
   const [error, setError] = useState("");
 
@@ -21,7 +23,6 @@ const Register = () => {
 
     try {
       if (!name || !email || !password || !cep) {
-        alert("Todas as informações são obrigatórias");
         setError("Todas as informações são obrigatórias");
         return;
       }
@@ -93,17 +94,39 @@ const Register = () => {
             onChange={(e) => setEmail(e.target.value)}
             value={email}
           />
-          <Input
-            placeholder="Senha"
-            onChange={(e) => setSenha(e.target.value)}
-            value={password}
-          />
-          <Input
-            placeholder="Confirme sua senha"
-            type="password"
-            onChange={(e) => setCheckSenha(e.target.value)}
-            value={checksenha}
-          />
+          <div className="relative w-full">
+            <Input
+              placeholder="Senha"
+              type={showPassword ? "text" : "password"}
+              onChange={(e) => setSenha(e.target.value)}
+              className="w-full bg-transparent py-3 text-xs text-white outline-none placeholder:text-[#77776F]"
+            />
+
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute top-1/2 right-2 -translate-y-1/2 cursor-pointer text-[#9D9D94]"
+            >
+              {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+            </button>
+          </div>
+
+          <div className="relative w-full">
+            <Input
+              placeholder="Confirme sua senha"
+              type={showPassword ? "text" : "password"}
+              onChange={(e) => setCheckSenha(e.target.value)}
+              className="w-full bg-transparent py-3 text-xs text-white outline-none placeholder:text-[#77776F]"
+            />
+
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute top-1/2 right-2 -translate-y-1/2 cursor-pointer text-[#9D9D94]"
+            >
+              {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+            </button>
+          </div>
           <Input
             placeholder="C.E.P"
             onChange={(e) => setCep(e.target.value)}

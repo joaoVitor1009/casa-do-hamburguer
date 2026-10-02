@@ -5,10 +5,12 @@ import Button from "../components/Button";
 import { useNavigate } from "react-router";
 import { useContext } from "react";
 import { UserContext } from "../contexts/UserContext";
+import { Eye, EyeOff } from "lucide-react";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
   const { setUser } = useContext(UserContext);
@@ -77,11 +79,22 @@ const Login = () => {
             type="Email"
             onChange={(e) => setEmail(e.target.value)}
           />
-          <Input
-            placeholder="Senha"
-            type="password"
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <div className="relative w-full">
+            <Input
+              placeholder="Senha"
+              type={showPassword ? "text" : "password"}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full bg-transparent py-3 text-xs text-white outline-none placeholder:text-[#77776F]"
+            />
+
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute top-1/2 right-2 -translate-y-1/2 cursor-pointer text-[#9D9D94]"
+            >
+              {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+            </button>
+          </div>
 
           <p className="text-left text-red-500">{error}</p>
         </div>

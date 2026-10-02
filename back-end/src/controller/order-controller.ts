@@ -1,6 +1,63 @@
 import type { Request, Response } from "express";
 import { prisma } from "../db.js";
 
+// Armazena as conexões ativas do Server-Sent Events (SSE)
+const clients: Record<string, Response[]> = {};
+let adminClients: Response[] = [];
+
+export function subscribeAdminEvents(req: Request, resp: Response) {
+  resp.setHeader("Content-Type", "text/event-stream");
+  resp.setHeader("Cache-Control", "no-cache");
+  resp.setHeader("Connection", "keep-alive");
+
+  adminClients.push(resp);
+
+  // Remove da lista quando o admin fecha a tela ou desloga
+  req.on("close", () => {
+    adminClients = adminClients.filter((client) => client !== resp);
+  });
+}
+
+// Helper para notificar todos os Admins conectados
+function notifyAdmins(data: any) {
+  adminClients.forEach((client) => {
+    client.write(`data: ${JSON.stringify(data)}\n\n`);
+  });
+}
+
+// Rota onde o frontend abre a conexão em tempo real
+export function subscribeOrderEvents(
+  req: Request<{ id: string }>,
+  resp: Response,
+) {
+  const { id } = req.params;
+
+  // Configuração dos cabeçalhos HTTP do SSE
+  resp.setHeader("Content-Type", "text/event-stream");
+  resp.setHeader("Cache-Control", "no-cache");
+  resp.setHeader("Connection", "keep-alive");
+
+  if (!clients[id]) {
+    clients[id] = [];
+  }
+  clients[id].push(resp);
+
+  // Quando o usuário fecha a aba ou sai da tela, removemos a conexão
+  req.on("close", () => {
+    const activeClients = clients[id];
+
+    if (!activeClients) {
+      return;
+    }
+
+    clients[id] = activeClients.filter((client) => client !== resp);
+
+    if (clients[id].length === 0) {
+      delete clients[id];
+    }
+  });
+}
+
 export async function createOrder(req: Request, resp: Response) {
   try {
     const { user } = req;
@@ -50,6 +107,7 @@ export async function createOrder(req: Request, resp: Response) {
     await prisma.cartItem.deleteMany({
       where: { userId: user.id },
     });
+    notifyAdmins({ type: "NEW_ORDER", order });
 
     resp.status(201).json({ cartItems, order });
   } catch (e) {
@@ -60,12 +118,16 @@ export async function createOrder(req: Request, resp: Response) {
 export async function getOrders(req: Request, resp: Response) {
   try {
     const { user } = req;
-    console.log(user);
 
     const filterUserOrders = await prisma.order.findMany({
-      include: { user: true },
+      include: {
+        user: true,
+        items: {
+          include: { product: true },
+        },
+      },
     });
-    console.log(filterUserOrders);
+
     if (filterUserOrders.length === 0) {
       return resp
         .status(404)
@@ -104,7 +166,7 @@ export async function updateStatus(
     }
 
     let deliveredTime;
-    if (status === "Retirado" || status === "Cancelado") {
+    if (status !== "Pendente") {
       deliveredTime = new Date();
     } else {
       deliveredTime = null;
@@ -118,6 +180,14 @@ export async function updateStatus(
       },
     });
 
+    if (clients[id]) {
+      clients[id].forEach((client) => {
+        client.write(`data: ${JSON.stringify(novoStatusEDelivered)}\n\n`);
+      });
+    }
+
+    notifyAdmins({ type: "UPDATE_STATUS", order: novoStatusEDelivered });
+
     resp.status(200).json({
       novoStatus: novoStatusEDelivered.status,
       deliveredTime: novoStatusEDelivered.deliveredTime,
@@ -125,5 +195,32 @@ export async function updateStatus(
     });
   } catch (e) {
     console.log(e);
+  }
+}
+
+export async function getOrderById(
+  req: Request<{ id: string }>,
+  resp: Response,
+) {
+  try {
+    const { id } = req.params;
+    const { user } = req;
+
+    const order = await prisma.order.findFirst({
+      where: { id: id, userId: user.id },
+      include: {
+        items: {
+          include: { product: true },
+        },
+      },
+    });
+
+    if (!order) {
+      return resp.status(404).json({ message: "Pedido não encontrado" });
+    }
+
+    resp.status(200).json(order);
+  } catch (e) {
+    return resp.status(500).json({ message: "Erro ao buscar o pedido" });
   }
 }

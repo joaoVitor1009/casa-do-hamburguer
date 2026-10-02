@@ -7,6 +7,8 @@ import Orders from "./pages/Orders";
 import OrderReview from "./pages/OrderReview";
 import PublicRoute from "./components/PublicRoute";
 import Payment from "./pages/Payment";
+import OrderSucess from "./pages/OrderSucess";
+import UserUpdate from "./pages/UserUpdate";
 
 const Layout = () => {
   return (
@@ -40,6 +42,14 @@ export const router = createBrowserRouter([
       {
         path: "/Payment",
         element: <Payment />,
+      },
+      {
+        path: "/OrderSucess/:id",
+        element: <OrderSucess />,
+      },
+      {
+        path: "/UserUpdate",
+        element: <UserUpdate />,
       },
     ],
   },

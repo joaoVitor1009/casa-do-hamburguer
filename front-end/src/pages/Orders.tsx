@@ -4,6 +4,7 @@ import Button from "../components/Button";
 import CardOrder from "../components/CarOrder";
 import { base } from "../utils/FormatterPrice";
 import type { UserInterface } from "../types/User";
+import type { ProductInterface } from "../types/Product";
 
 type cardOrderType = {
   id: string;
@@ -13,6 +14,17 @@ type cardOrderType = {
   userId: string;
   user: UserInterface;
   deliveredTime: string | null;
+
+  tipoEntrega: string;
+  formaPagamento: string;
+  observacao: string;
+
+  items: {
+    id: string;
+    quantity: number;
+    price: number;
+    product: ProductInterface;
+  }[];
 };
 
 const Orders = () => {
@@ -57,6 +69,22 @@ const Orders = () => {
 
   useEffect(() => {
     getOrders();
+
+    const eventSource = new EventSource(base + "admin-events", {
+      withCredentials: true,
+    });
+
+    eventSource.onmessage = () => {
+      getOrders();
+    };
+
+    eventSource.onerror = (error) => {
+      console.error("Erro na conexão SSE do Admin:", error);
+    };
+
+    return () => {
+      eventSource.close();
+    };
   }, []);
 
   return (
@@ -69,9 +97,19 @@ const Orders = () => {
           onClick={() => handleChangeCategory("Pendente")}
         />
         <Button
+          title="Preparando"
+          variant={getCategory("Preparando")}
+          onClick={() => handleChangeCategory("Preparando")}
+        />
+        <Button
           title="Retirado"
           variant={getCategory("Retirado")}
           onClick={() => handleChangeCategory("Retirado")}
+        />
+        <Button
+          title="Concluido"
+          variant={getCategory("Concluido")}
+          onClick={() => handleChangeCategory("Concluido")}
         />
         <Button
           title="Cancelado"
@@ -79,7 +117,7 @@ const Orders = () => {
           onClick={() => handleChangeCategory("Cancelado")}
         />
       </div>
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-1">
         {filteredOrders.map((items) => {
           const date = new Date(items.createdAt);
 
@@ -122,6 +160,10 @@ const Orders = () => {
               total={items.total}
               status={items.status}
               contador={position + 1}
+              tipoEntrega={items.tipoEntrega}
+              formaPagamento={items.formaPagamento}
+              observacao={items.observacao}
+              items={items.items}
               getOrders={getOrders}
             />
           );

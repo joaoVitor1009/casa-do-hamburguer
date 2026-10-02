@@ -7,15 +7,18 @@ import {
   SquareMenu,
   ScrollText,
   Plus,
+  Menu,
 } from "lucide-react";
 import Cart from "./Cart";
 import { CartItemContext } from "../contexts/CartItemContext";
 import CardProduct from "./CardProduct";
+import CartOptional from "./CartOpition";
 
 const Header = () => {
   const { user, setUser } = useContext(UserContext);
   const [showCart, setShowCart] = useState<boolean>(false);
   const [showCartProduct, setShowCartProduct] = useState<boolean>(false);
+  const [showCartOption, setShowCartOption] = useState<boolean>(false);
   const cartRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
 
@@ -67,17 +70,18 @@ const Header = () => {
     const handleClickOutside = (event: MouseEvent) => {
       if (cartRef.current && !cartRef.current.contains(event.target as Node)) {
         setShowCart(false);
+        setShowCartOption(false);
       }
     };
 
-    if (showCart) {
+    if (showCart || showCartOption) {
       document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [showCart]);
+  }, [showCart, showCartOption]);
 
   const getNavItemClass = (path: string) => {
     const baseClass =
@@ -102,6 +106,16 @@ const Header = () => {
           <Cart setShowCart={setShowCart} showCart={showCart} />
         </div>
       )}
+
+      {showCartOption && (
+        <div ref={cartRef}>
+          <CartOptional
+            setShowCartOption={setShowCartOption}
+            showCartOption={showCartOption}
+          />
+        </div>
+      )}
+
       {showCartProduct && (
         <div>
           <CardProduct
@@ -153,18 +167,27 @@ const Header = () => {
             )}
 
             <div className="relative cursor-pointer">
-              <ShoppingCart size={24} onClick={() => setShowCart(!showCart)} />
+              <ShoppingCart
+                size={24}
+                onClick={() => {
+                  setShowCart(!showCart);
+                  setShowCartOption(false);
+                }}
+              />
               <p className="absolute -top-4 -right-4 flex h-5 w-5 items-center justify-center rounded-full bg-[#F2DAAC] text-[#161410]">
                 {cartQuantity}
               </p>
             </div>
 
-            <div className="flex items-center gap-2">
-              <p>Olá, {user?.name} </p>
-              <LogOut
-                className="cursor-pointer"
-                size={24}
-                onClick={handleLogout}
+            <div className="flex items-center gap-3">
+              <p>Bem-vindo </p>
+
+              <Menu
+                className="cursor-pointer rounded-sm hover:bg-[#F2DAAC] hover:text-[#161410]"
+                onClick={() => {
+                  setShowCartOption(!showCartOption);
+                  setShowCart(false);
+                }}
               />
             </div>
           </div>

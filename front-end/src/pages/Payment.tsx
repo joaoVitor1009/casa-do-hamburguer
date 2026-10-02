@@ -22,7 +22,7 @@ const Payment = () => {
     tipoEntrega: "Entrega",
     observacoes: "Nenhuma observação",
   };
-  const [metodoPagamento, setMetodoPagamento] = useState("");
+  const [metodoPagamento, setMetodoPagamento] = useState("debito_online");
   const [opcaoEntrega, setOpcaoEntrega] = useState("");
   const [valorTroco, setValorTroco] = useState("");
 
@@ -30,7 +30,7 @@ const Payment = () => {
     try {
       let formaPagamentoFinal = metodoPagamento;
       if (metodoPagamento === "entrega") {
-        if (opcaoEntrega === "dinheiro") {
+        if (opcaoEntrega === "dinheiro_entrega") {
           formaPagamentoFinal = valorTroco
             ? `Dinheiro (Troco para R$ ${valorTroco})`
             : "Dinheiro (Sem troco)";
@@ -60,7 +60,12 @@ const Payment = () => {
       const data = await response.json();
       console.log("Pedido criado com sucesso:", data);
       getCartItems();
-      navigate("/");
+      navigate(`/OrderSucess/${data.order.id}`, {
+        state: {
+          data: data,
+          cartItems: cartItems,
+        },
+      });
     } catch (error) {
       console.error("Erro na requisição:", error);
       alert("Erro de conexão ao enviar o pedido.");
@@ -71,7 +76,7 @@ const Payment = () => {
     (acc, item) => acc + item.productid.price * item.quantity,
     0,
   );
-  const priceDelivery = tipoEntrega === "Entrega" ? priceTotal * 0.1 : 0;
+  const priceDelivery = tipoEntrega === "entrega" ? priceTotal * 0.1 : 0;
   const totalFinal = priceTotal + priceDelivery;
 
   return (
@@ -96,25 +101,25 @@ const Payment = () => {
           <div className="flex flex-col gap-3">
             {[
               {
-                id: "debito",
+                id: "debito_online",
                 nome: "Débito",
                 desc: "Pague com seu cartão de débito.",
                 Icon: CreditCard,
               },
               {
-                id: "credito",
+                id: "credito_online",
                 nome: "Crédito",
                 desc: "Pague com seu cartão de crédito.",
                 Icon: CreditCard,
               },
               {
-                id: "voucher",
+                id: "voucher_online",
                 nome: "Voucher",
                 desc: "Pague com Vale-Refeição ou Alimentação.",
                 Icon: Ticket,
               },
               {
-                id: "pix",
+                id: "pix_online",
                 nome: "Pix",
                 desc: "Pague de forma rápida e segura.",
                 Icon: QrCode,
@@ -168,11 +173,11 @@ const Payment = () => {
                       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                         {[
                           {
-                            id: "cartao_debito_entrega",
+                            id: "cartao_debito",
                             label: "Cartão de Débito",
                           },
                           {
-                            id: "cartao_credito_entrega",
+                            id: "cartao_credito",
                             label: "Cartão de Crédito",
                           },
                           { id: "voucher_entrega", label: "Voucher" },
@@ -197,7 +202,9 @@ const Payment = () => {
                         <div className="mt-2 flex flex-col gap-2 rounded-lg border border-[#2d2820] bg-[#1a1713] p-3">
                           <div className="flex items-center gap-2 text-xs font-bold tracking-wider text-[#F2DAAC] uppercase">
                             <Coins size={14} />
-                            <span>Precisa de troco para quanto?</span>
+                            <span>
+                              Precisa de troco para quanto? (opcional)
+                            </span>
                           </div>
                           <div className="relative mt-1">
                             <input

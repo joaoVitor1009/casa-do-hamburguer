@@ -107,6 +107,55 @@ export const register = async (req: Request, resp: Response) => {
   }
 };
 
+export const updateDataUser = async (
+  req: Request<{ id: string }>,
+  resp: Response,
+) => {
+  try {
+    const { user } = req;
+    const { id } = req.params;
+    const { name, email, cep, password } = req.body;
+
+    const verfEmail = await prisma.user.findFirst({
+      where: { email: email },
+    });
+
+    if (verfEmail) {
+      return resp.status(401).json({ message: "Email ja cadastrado" });
+    }
+
+    const hash = await bcrypt.hash(password, 10);
+    let newDataUser;
+    if (!password) {
+      newDataUser = {
+        name: name || user?.name,
+        email: email || user?.email,
+        cep: cep || user?.cep,
+      };
+    } else {
+      newDataUser = {
+        name: name || user?.name,
+        email: email || user?.email,
+        cep: cep || user?.cep,
+        password: hash,
+      };
+    }
+
+    if (!id) {
+      return resp.status(400).json({ message: "Erro sem usuario logado" });
+    }
+
+    const userUpdate = await prisma.user.update({
+      where: { id: id },
+      data: newDataUser,
+    });
+    resp.clearCookie("user");
+    return resp.status(200).json(userUpdate);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
 export const auth = async (req: Request, resp: Response) => {
   try {
     const { user } = req;

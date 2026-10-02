@@ -1,5 +1,11 @@
 import { Router } from "express";
-import { auth, login, logout, register } from "./controller/user-controller.js";
+import {
+  auth,
+  login,
+  logout,
+  register,
+  updateDataUser,
+} from "./controller/user-controller.js";
 import { authMiddleware } from "./middlewares/auth.js";
 import {
   createProduct,
@@ -14,7 +20,10 @@ import {
 } from "./controller/cartItem-controller.js";
 import {
   createOrder,
+  getOrderById,
   getOrders,
+  subscribeAdminEvents,
+  subscribeOrderEvents,
   updateStatus,
 } from "./controller/order-controller.js";
 
@@ -27,6 +36,7 @@ router.post("/login", login);
 router.post("/register", register);
 router.post("/logout", authMiddleware, logout);
 router.get("/me", authMiddleware, auth);
+router.put("/updateDataUser/:id", authMiddleware, updateDataUser);
 
 //Rotas de produto
 router.get("/getProduct", getProduct);
@@ -48,3 +58,6 @@ router.put("/updateCartitem/:id", authMiddleware, updateCartItem);
 router.post("/createOrders", authMiddleware, createOrder);
 router.get("/getOrders", authMiddleware, getOrders);
 router.put("/updateStatus/:id", authMiddleware, updateStatus);
+router.get("/getOrder/:id", authMiddleware, getOrderById);
+router.get("/order-events/:id", subscribeOrderEvents);
+router.get("/admin-events", authMiddleware, subscribeAdminEvents);
