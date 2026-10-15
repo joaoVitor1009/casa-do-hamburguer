@@ -68,4 +68,99 @@
 
 A aplicação conta com cinco entidades principais:
 
-- **`User`:**
+- **`User`:** armazena os dados cadastrais, o endereço (CEP), a senha criptografada e as permissões de administrador.
+- **`Product`:** armazena o nome, a descrição, o preço, a imagem e a categoria do produto.
+- **`CartItem`:** relaciona usuários e produtos, controlando a quantidade de cada item no carrinho.
+- **`Order`:** registra as vendas, incluindo status, forma de pagamento, tipo de entrega e horário de entrega.
+- **`OrderItem`:** armazena os itens comprados, incluindo o preço histórico e a quantidade de cada produto.
+
+---
+
+## 🚀 Como Executar o Projeto Localmente
+
+### Pré-requisitos
+
+- [Node.js](https://nodejs.org/) — versão 18 ou superior.
+- [PostgreSQL](https://www.postgresql.org/) — instalado e em execução.
+- npm — gerenciador de pacotes incluído na instalação do Node.js.
+
+### 1. Clonar o repositório
+
+```bash
+git clone https://github.com/joaoVitor1009/casa-do-hamburguer.git
+cd casa-do-hamburguer
+```
+
+### 2. Configurar e executar o back-end
+
+```bash
+cd back-end
+
+# Instalar as dependências
+npm install
+```
+
+Crie um arquivo `.env` dentro da pasta `back-end` e configure as variáveis de ambiente:
+
+```env
+DATABASE_URL="postgresql://usuario:senha@localhost:5432/casa_hamburguer?schema=public"
+JWT_SECRET="seu_segredo_jwt_aqui"
+```
+
+**Importante:** substitua `usuario`, `senha` e os demais valores pelos dados da sua instalação do PostgreSQL. Utilize um segredo JWT forte e mantenha o arquivo `.env` fora do controle de versão.
+
+Execute as migrações do banco de dados:
+
+```bash
+npx prisma migrate dev
+```
+
+Inicie o servidor em modo de desenvolvimento:
+
+```bash
+npm run start:watch
+```
+
+### 3. Configurar e executar o front-end
+
+Abra outro terminal e execute:
+
+```bash
+cd front-end
+
+# Instalar as dependências
+npm install
+
+# Iniciar a aplicação
+npm run dev
+```
+
+Após iniciar os dois serviços, acesse o endereço local informado pelo Vite no terminal para utilizar a aplicação.
+
+---
+
+## 📌 Rotas da API (Visão Geral)
+
+| Método | Endpoint | Descrição | Autenticação |
+|---|---|---|:---:|
+| `POST` | `/register` | Cadastra um novo cliente | ❌ |
+| `POST` | `/login` | Autentica o usuário e gera um cookie HTTP-Only | ❌ |
+| `GET` | `/me` | Retorna os dados do usuário autenticado | ✅ |
+| `GET` | `/getProduct` | Lista os produtos do cardápio | ❌ |
+| `POST` | `/createProduct` | Cadastra um produto com imagem | ✅ Admin |
+| `GET` | `/getItems` | Retorna os itens do carrinho do usuário | ✅ |
+| `POST` | `/createCartitem` | Adiciona um produto ao carrinho | ✅ |
+| `POST` | `/createOrders` | Cria um novo pedido | ✅ |
+| `GET` | `/order-events/:id` | Estabelece uma conexão SSE para acompanhar o status do pedido | Conforme implementação |
+| `GET` | `/admin-events` | Estabelece uma conexão SSE para monitoramento de novos pedidos | ✅ |
+
+**Observação:** a exigência de autenticação de cada rota deve corresponder à implementação real do back-end. Confirme também os nomes exatos dos endpoints no código-fonte.
+
+---
+
+## 👨‍💻 Autor
+
+Desenvolvido por **João Vitor**.
+
+- GitHub: [@joaoVitor1009](https://github.com/joaoVitor1009)
+- Repositório: [Casa do Hambúrguer](https://github.com/joaoVitor1009/casa-do-hamburguer)
