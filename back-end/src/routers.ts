@@ -22,6 +22,7 @@ import {
   createOrder,
   getOrderById,
   getOrders,
+  getOrdersById,
   subscribeAdminEvents,
   subscribeOrderEvents,
   updateStatus,
@@ -57,6 +58,7 @@ router.put("/updateCartitem/:id", authMiddleware, updateCartItem);
 //Rotas Orders
 router.post("/createOrders", authMiddleware, createOrder);
 router.get("/getOrders", authMiddleware, getOrders);
+router.get("/getOrdersById", authMiddleware, getOrdersById);
 router.put("/updateStatus/:id", authMiddleware, updateStatus);
 router.get("/getOrder/:id", authMiddleware, getOrderById);
 router.get("/order-events/:id", subscribeOrderEvents);

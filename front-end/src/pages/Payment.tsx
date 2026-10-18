@@ -60,12 +60,7 @@ const Payment = () => {
       const data = await response.json();
       console.log("Pedido criado com sucesso:", data);
       getCartItems();
-      navigate(`/OrderSucess/${data.order.id}`, {
-        state: {
-          data: data,
-          cartItems: cartItems,
-        },
-      });
+      navigate(`/OrderSucess/${data.order.id}`);
     } catch (error) {
       console.error("Erro na requisição:", error);
       alert("Erro de conexão ao enviar o pedido.");

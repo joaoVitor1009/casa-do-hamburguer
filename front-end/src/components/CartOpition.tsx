@@ -76,10 +76,10 @@ const CartOptional = ({ setShowCartOption, showCartOption }: cartTypes) => {
         <button
           type="button"
           onClick={() => {
-            navigate("/");
+            navigate("/MyOrders");
             setShowCartOption(false);
           }}
-          className="flex w-full items-center justify-between border-t border-black/25 py-3.5"
+          className="flex w-full cursor-pointer items-center justify-between border-t border-black/25 py-3.5"
         >
           <div className="flex items-center gap-3">
             <ClipboardList size={18} />

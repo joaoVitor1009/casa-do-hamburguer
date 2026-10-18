@@ -140,6 +140,36 @@ export async function getOrders(req: Request, resp: Response) {
   }
 }
 
+export async function getOrdersById(
+  req: Request<{ id: string }>,
+  resp: Response,
+) {
+  try {
+    const { user } = req;
+
+    const filterUserOrders = await prisma.order.findMany({
+      where: { userId: user.id },
+      orderBy: { createdAt: "desc" },
+      include: {
+        user: true,
+        items: {
+          include: { product: true },
+        },
+      },
+    });
+
+    if (filterUserOrders.length === 0) {
+      return resp
+        .status(404)
+        .json({ message: "Não foram encontrados pedidos" });
+    }
+
+    resp.status(200).json(filterUserOrders);
+  } catch (e) {
+    return resp.status(500).json("Erro ao buscar pedidos");
+  }
+}
+
 export async function updateStatus(
   req: Request<{ id: string }>,
   resp: Response,
@@ -161,17 +191,13 @@ export async function updateStatus(
       });
     }
 
-    if (user.admin != true) {
+    if (user.admin !== true) {
       return resp.status(401).json({ message: "Não autorizado" });
     }
 
-    let deliveredTime;
-    if (status !== "Pendente") {
-      deliveredTime = new Date();
-    } else {
-      deliveredTime = null;
-    }
+    const deliveredTime = status !== "Pendente" ? new Date() : null;
 
+    // 1. Atualiza no banco e retorna o userId do pedido
     const novoStatusEDelivered = await prisma.order.update({
       where: { id: id },
       data: {
@@ -180,21 +206,25 @@ export async function updateStatus(
       },
     });
 
-    if (clients[id]) {
-      clients[id].forEach((client) => {
+    // 2. CORREÇÃO: Busca os clientes ativos usando o userId do pedido
+    const targetUserId = novoStatusEDelivered.userId;
+
+    if (clients[targetUserId]) {
+      clients[targetUserId].forEach((client) => {
         client.write(`data: ${JSON.stringify(novoStatusEDelivered)}\n\n`);
       });
     }
 
     notifyAdmins({ type: "UPDATE_STATUS", order: novoStatusEDelivered });
 
-    resp.status(200).json({
+    return resp.status(200).json({
       novoStatus: novoStatusEDelivered.status,
       deliveredTime: novoStatusEDelivered.deliveredTime,
       message: "Sucesso",
     });
   } catch (e) {
-    console.log(e);
+    console.error("Erro ao atualizar status:", e);
+    return resp.status(500).json({ message: "Erro ao atualizar status" });
   }
 }
 

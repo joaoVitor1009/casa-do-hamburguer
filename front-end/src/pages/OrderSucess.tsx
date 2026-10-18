@@ -7,6 +7,7 @@ import {
   Clock,
   CookingPot,
   CreditCard,
+  FileText,
   HomeIcon,
   MapPin,
   MessageSquare,
@@ -17,6 +18,7 @@ import {
 import { formatterPrice } from "../utils/FormatterPrice";
 import type { ProductInterface } from "../types/Product";
 import type { UserInterface } from "../types/User";
+import OrderReceipt from "../components/OrderReceipt";
 
 type orderType = {
   id: string;
@@ -42,9 +44,9 @@ const OrderSucess = () => {
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
   const { user } = useContext(UserContext);
-  const { data, cartItems } = location.state || {};
-  const [order, setOrder] = useState<orderType | null>(data?.order || null);
+  const [order, setOrder] = useState<orderType | null>(null);
   const [showBanner, setShowBanner] = useState(true);
+  const [showReceipt, setShowReceipt] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -56,10 +58,9 @@ const OrderSucess = () => {
 
   const loadOrderData = async () => {
     try {
-      const response = await fetch(
-        `http://localhost:3000/getOrder/${order?.id}`,
-        { credentials: "include" },
-      );
+      const response = await fetch(`http://localhost:3000/getOrder/${id}`, {
+        credentials: "include",
+      });
 
       if (response.ok) {
         const data = await response.json();
@@ -72,36 +73,60 @@ const OrderSucess = () => {
   };
 
   useEffect(() => {
-    if (order?.id) {
+    if (id) {
       loadOrderData();
     }
-  }, [order?.id]);
+  }, [id]);
 
   useEffect(() => {
-    if (!order?.id) return;
+    loadOrderData();
+  }, [user?.id]);
+
+  useEffect(() => {
+    async function fetchOrder() {
+      try {
+        const response = await fetch(`http://localhost:3000/getOrder/${id}`, {
+          credentials: "include",
+        });
+        const data = await response.json();
+        setOrder(data);
+      } catch (error) {
+        console.error("Erro ao buscar pedido:", error);
+      }
+    }
+
+    if (id) fetchOrder();
+  }, [id]);
+
+  // 2. Escuta de atualizações em tempo real via SSE
+  useEffect(() => {
+    if (!user?.id || !id) return;
 
     const eventSource = new EventSource(
-      `http://localhost:3000/order-events/${order.id}`,
+      `http://localhost:3000/order-events/${user.id}`,
       { withCredentials: true },
     );
 
     eventSource.onmessage = (event) => {
-      const updatedData = JSON.parse(event.data);
-      setOrder((prevOrder) => ({
-        ...prevOrder,
-        ...updatedData,
-      }));
-    };
+      try {
+        const updatedOrder: orderType = JSON.parse(event.data);
 
-    eventSource.onerror = (error) => {
-      console.error("Erro na conexão em tempo real:", error);
+        // Se o pedido alterado pelo Admin for O MESMO que está na tela, atualiza!
+        if (updatedOrder.id === id) {
+          setOrder((prevOrder) => ({
+            ...prevOrder,
+            ...updatedOrder,
+          }));
+        }
+      } catch (err) {
+        console.error("Erro ao processar atualização em tempo real:", err);
+      }
     };
 
     return () => {
       eventSource.close();
     };
-  }, []);
-
+  }, [user?.id, id]);
   const etapaAtual = () => {
     switch (order?.status) {
       case "Pendente":
@@ -129,7 +154,7 @@ const OrderSucess = () => {
   return (
     <div className="mx-auto mt-6 mb-10 w-full max-w-3xl px-4 text-[#F2DAAC]">
       {/* 1. CABEÇALHO DE SUCESSO (10 Segundos) */}
-      {showBanner && (
+      {showBanner && order?.status === "Pendente" && (
         <div className="flex flex-col items-center text-center transition-all duration-500">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#F2DAAC] text-[#161410] shadow-lg">
             <Check size={36} strokeWidth={3} />
@@ -155,7 +180,7 @@ const OrderSucess = () => {
               Nº do Pedido
             </p>
             <p className="text-sm font-extrabold text-[#F2DAAC]">
-              #{order?.id ? order.id.slice(0, 5) : id ? id.slice(0, 5) : ""}
+              #{order?.id ? order.id.slice(0, 5) : ""}
             </p>
           </div>
         </div>
@@ -383,9 +408,8 @@ const OrderSucess = () => {
         </div>
 
         <div className="mt-4 flex flex-col gap-4">
-          {cartItems && cartItems.length > 0 ? (
-            cartItems.map((item: any) => {
-              const product = item.productid || item.product;
+          {order?.items && order.items.length > 0 ? (
+            order.items.map((item) => {
               return (
                 <div className="flex flex-col">
                   <div
@@ -393,16 +417,16 @@ const OrderSucess = () => {
                     className="flex items-center justify-between gap-3"
                   >
                     <div className="flex items-center gap-3">
-                      {product?.img && (
+                      {item.product?.img && (
                         <img
-                          src={product.img}
-                          alt={product.name}
+                          src={item.product.img}
+                          alt={item.product.name}
                           className="h-12 w-12 rounded-lg object-cover"
                         />
                       )}
                       <div>
                         <p className="text-xs font-bold text-[#F2DAAC] uppercase">
-                          {product?.name}
+                          {item.product.name}
                         </p>
                         <span className="text-xs text-[#9D9D94]">
                           {item.quantity}x
@@ -410,49 +434,10 @@ const OrderSucess = () => {
                       </div>
                     </div>
                     <span className="text-xs font-bold text-[#F2DAAC]">
-                      {formatterPrice((product?.price || 0) * item.quantity)}
-                    </span>
-                  </div>
-                  <div className="mt-4 rounded-lg border border-[#F2DAAC]/15 bg-[#201D17] p-4">
-                    <h3 className="mb-3 text-[11px] font-bold tracking-widest text-[#F2DAAC]/70 uppercase">
-                      Informações Gerais
-                    </h3>
-
-                    <div className="flex flex-col gap-3">
-                      <div className="flex items-start gap-3">
-                        <CreditCard
-                          size={16}
-                          className="mt-0.5 text-[#F2DAAC]"
-                        />
-
-                        <div className="flex flex-col gap-1">
-                          <span className="text-xs text-[#9D9D94]">
-                            Forma de pagamento
-                          </span>
-                          <span className="text-sm font-medium text-[#F2DAAC]">
-                            {order?.formaPagamento}
-                          </span>
-                        </div>
-                      </div>
-
-                      {order?.observacao && (
-                        <div className="flex items-start gap-3">
-                          <MessageSquare
-                            size={16}
-                            className="mt-0.5 shrink-0 text-[#F2DAAC]"
-                          />
-
-                          <div className="flex flex-col gap-1">
-                            <span className="text-xs text-[#9D9D94]">
-                              Observações
-                            </span>
-                            <span className="text-sm leading-relaxed text-[#F2DAAC]">
-                              {order.observacao}
-                            </span>
-                          </div>
-                        </div>
+                      {formatterPrice(
+                        (item.product.price || 0) * item.quantity,
                       )}
-                    </div>
+                    </span>
                   </div>
                 </div>
               );
@@ -460,6 +445,42 @@ const OrderSucess = () => {
           ) : (
             <p className="text-xs text-[#9D9D94]">Nenhum item listado.</p>
           )}
+          <div className="mt-4 rounded-lg border border-[#F2DAAC]/15 bg-[#201D17] p-4">
+            <h3 className="mb-3 text-[11px] font-bold tracking-widest text-[#F2DAAC]/70 uppercase">
+              Informações Gerais
+            </h3>
+
+            <div className="flex flex-col gap-3">
+              <div className="flex items-start gap-3">
+                <CreditCard size={16} className="mt-0.5 text-[#F2DAAC]" />
+
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs text-[#9D9D94]">
+                    Forma de pagamento
+                  </span>
+                  <span className="text-sm font-medium text-[#F2DAAC]">
+                    {order?.formaPagamento}
+                  </span>
+                </div>
+              </div>
+
+              {order?.observacao && (
+                <div className="flex items-start gap-3">
+                  <MessageSquare
+                    size={16}
+                    className="mt-0.5 shrink-0 text-[#F2DAAC]"
+                  />
+
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs text-[#9D9D94]">Observações</span>
+                    <span className="text-sm leading-relaxed text-[#F2DAAC]">
+                      {order.observacao}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
         <div className="my-4 h-[1px] w-full bg-[#F2DAAC]/20" />
@@ -473,7 +494,52 @@ const OrderSucess = () => {
         </div>
       </div>
 
-      <div className="mt-8 flex justify-center">
+      <div className="mt-8 flex justify-between gap-4">
+        <button
+          className="flex items-center gap-2 rounded-lg bg-[#F2DAAC] px-8 py-3 text-sm font-bold text-[#161410] transition hover:bg-[#e4cb9c]"
+          onClick={() => setShowReceipt(true)}
+        >
+          <FileText size={18} />
+          <span>Gerar Recibo</span>
+        </button>
+
+        {showReceipt && order && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+            {/* Caixa do modal */}
+            <div className="flex max-h-[90vh] flex-col items-center gap-4 overflow-y-auto">
+              <OrderReceipt
+                id={order.id}
+                total={order.total}
+                tipoEntrega={order.tipoEntrega}
+                formaPagamento={order.formaPagamento}
+                observacao={order.observacao}
+                createdAt={order.createdAt}
+                items={order.items.map((item) => ({
+                  price: item.price,
+                  quantity: item.quantity,
+                  product: item.product,
+                }))}
+              />
+
+              {/* 2. Botões de ação (Imprimir e Fechar) */}
+              <div className="flex w-full justify-between">
+                <button
+                  className="rounded-lg bg-neutral-700 px-4 py-2 font-bold text-white"
+                  onClick={() => setShowReceipt(false)}
+                >
+                  Fechar
+                </button>
+                <button
+                  className="rounded-lg bg-[#F2DAAC] px-4 py-2 font-bold text-[#161410]"
+                  onClick={() => window.print()}
+                >
+                  Imprimir/Salvar PDF
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <Link
           to="/"
           className="flex items-center gap-2 rounded-lg bg-[#F2DAAC] px-8 py-3 text-sm font-bold text-[#161410] transition hover:bg-[#e4cb9c]"
