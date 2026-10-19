@@ -120,6 +120,7 @@ export async function getOrders(req: Request, resp: Response) {
     const { user } = req;
 
     const filterUserOrders = await prisma.order.findMany({
+      orderBy: { createdAt: "desc" },
       include: {
         user: true,
         items: {

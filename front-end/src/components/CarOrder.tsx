@@ -7,10 +7,13 @@ import {
   Clock,
   ClockCheck,
   MessageSquare,
+  ChefHat,
+  Check,
 } from "lucide-react";
 
 import { base, formatterPrice } from "../utils/FormatterPrice";
 import type { ProductInterface } from "../types/Product";
+import { toast } from "sonner";
 
 type cardPedidoType = {
   id: string;
@@ -64,6 +67,19 @@ const CardOrder = ({
 
     if (response.ok) {
       getOrders();
+      toast.custom((t) => (
+        <div className="flex items-center gap-3 rounded-xl border border-[#F2DAAC] bg-[#F2DAAC] p-4 text-[#161410] shadow-2xl">
+          <Check size={22} />
+          <div>
+            <p className="text-sm font-bold">Pedido #{id.slice(0, 5)}</p>
+            <p className="text-xs text-[#161410]">
+              Agora está em: {novoStatus}
+            </p>
+          </div>
+        </div>
+      ));
+    } else {
+      toast.error(`Erro ao atualizar o pedido #${id.slice(0, 5)}.`);
     }
   }
 

@@ -1,9 +1,10 @@
-import { ShoppingBag } from "lucide-react";
+import { Check, ShoppingBag } from "lucide-react";
 import type { Productpros } from "../types/Product";
 import { formatterPrice } from "../utils/FormatterPrice";
 import { UserContext } from "../contexts/UserContext";
 import { useContext } from "react";
 import { CartItemContext } from "../contexts/CartItemContext";
+import { toast } from "sonner";
 const Product = ({
   id,
   name,
@@ -57,10 +58,22 @@ const Product = ({
         body: JSON.stringify({ productId: id }),
       });
       if (!response.ok) {
-        console.log("Deu ruim");
+        toast.error("Não foi possível adicionar ao carrinho.");
         return;
       }
       getCartItems();
+
+      toast.custom((t) => (
+        <div className="flex items-center gap-3 rounded-xl border border-[#F2DAAC] bg-[#F2DAAC] p-4 text-[#161410] shadow-2xl">
+          <Check size={22} />
+          <div>
+            <p className="text-sm font-bold">{name.toUpperCase()}</p>
+            <p className="text-xs text-[#161410]">
+              Agora está em seu carrinho!
+            </p>
+          </div>
+        </div>
+      ));
       const data = await response.json();
       console.log(data);
     } catch (e) {

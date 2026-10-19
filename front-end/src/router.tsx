@@ -11,10 +11,12 @@ import OrderSucess from "./pages/OrderSucess";
 import UserUpdate from "./pages/UserUpdate";
 import MyOrders from "./pages/MyOrders";
 import OrderReceipt from "./components/OrderReceipt";
+import { Toaster } from "sonner";
 
 const Layout = () => {
   return (
     <div className="flex min-h-screen flex-col bg-[#161410]">
+      <Toaster richColors position="top-right" theme="dark" expand={true} />
       <Header />
       <Outlet />
     </div>

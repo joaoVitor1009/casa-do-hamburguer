@@ -493,61 +493,70 @@ const OrderSucess = () => {
           </span>
         </div>
       </div>
-
-      <div className="mt-8 flex justify-between gap-4">
+      {/* 4. BOTÕES DE AÇÃO */}
+      <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <button
-          className="flex items-center gap-2 rounded-lg bg-[#F2DAAC] px-8 py-3 text-sm font-bold text-[#161410] transition hover:bg-[#e4cb9c]"
-          onClick={() => setShowReceipt(true)}
+          className="flex items-center justify-center gap-2 rounded-lg bg-[#F2DAAC] px-8 py-3 text-sm font-bold text-[#161410] transition hover:bg-[#e4cb9c]"
+          onClick={() => {
+            if (
+              order?.status === "Retirado" ||
+              order?.status === "Concluido" ||
+              order?.status === "Concluído"
+            ) {
+              setShowReceipt(true);
+            } else {
+              alert("Recibo ainda não gerado");
+            }
+          }}
         >
           <FileText size={18} />
           <span>Gerar Recibo</span>
         </button>
 
-        {showReceipt && order && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-            {/* Caixa do modal */}
-            <div className="flex max-h-[90vh] flex-col items-center gap-4 overflow-y-auto">
-              <OrderReceipt
-                id={order.id}
-                total={order.total}
-                tipoEntrega={order.tipoEntrega}
-                formaPagamento={order.formaPagamento}
-                observacao={order.observacao}
-                createdAt={order.createdAt}
-                items={order.items.map((item) => ({
-                  price: item.price,
-                  quantity: item.quantity,
-                  product: item.product,
-                }))}
-              />
-
-              {/* 2. Botões de ação (Imprimir e Fechar) */}
-              <div className="flex w-full justify-between">
-                <button
-                  className="rounded-lg bg-neutral-700 px-4 py-2 font-bold text-white"
-                  onClick={() => setShowReceipt(false)}
-                >
-                  Fechar
-                </button>
-                <button
-                  className="rounded-lg bg-[#F2DAAC] px-4 py-2 font-bold text-[#161410]"
-                  onClick={() => window.print()}
-                >
-                  Imprimir/Salvar PDF
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
         <Link
           to="/"
-          className="flex items-center gap-2 rounded-lg bg-[#F2DAAC] px-8 py-3 text-sm font-bold text-[#161410] transition hover:bg-[#e4cb9c]"
+          className="flex items-center justify-center gap-2 rounded-lg bg-[#F2DAAC] px-8 py-3 text-sm font-bold text-[#161410] transition hover:bg-[#e4cb9c]"
         >
           <HomeIcon size={18} />
           <span>Voltar para o cardápio</span>
         </Link>
       </div>
+
+      {/* 5. MODAL DO RECIBO */}
+      {showReceipt && order && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+          <div className="flex max-h-[90vh] flex-col items-center gap-4 overflow-y-auto">
+            <OrderReceipt
+              id={order.id}
+              total={order.total}
+              tipoEntrega={order.tipoEntrega}
+              formaPagamento={order.formaPagamento}
+              observacao={order.observacao}
+              createdAt={order.createdAt}
+              items={order.items.map((item) => ({
+                price: item.price,
+                quantity: item.quantity,
+                product: item.product,
+              }))}
+            />
+
+            <div className="flex w-full justify-between">
+              <button
+                className="rounded-lg bg-neutral-700 px-4 py-2 font-bold text-white"
+                onClick={() => setShowReceipt(false)}
+              >
+                Fechar
+              </button>
+              <button
+                className="rounded-lg bg-[#F2DAAC] px-4 py-2 font-bold text-[#161410]"
+                onClick={() => window.print()}
+              >
+                Imprimir/Salvar PDF
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

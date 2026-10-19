@@ -14,6 +14,7 @@ import { UserContext } from "../contexts/UserContext";
 import { formatterPrice } from "../utils/FormatterPrice";
 import CartMyOrders from "../components/CartMyOrders";
 import type { ProductInterface } from "../types/Product";
+import Button from "../components/Button";
 
 type ItemPedido = {
   id: string;
@@ -48,7 +49,7 @@ const MyOrders = () => {
   const { user } = useContext(UserContext);
   const [showCart, setShowCart] = useState(false);
   const [showOrderDetails, setShowOrderDetails] = useState<Pedido | null>(null);
-
+  const [filterStatus, setFilterStatus] = useState("Pendente");
   const navigate = useNavigate();
 
   const [orders, setOrders] = useState<Pedido[]>([]);
@@ -72,6 +73,26 @@ const MyOrders = () => {
       console.error("Erro ao buscar pedidos:", error);
     }
   };
+
+  const getfilterStatus = (categoryName: string) => {
+    const elementoSelecionado = "forty";
+
+    const elementoNãoSelecionado = "thirty";
+
+    if (filterStatus === categoryName) {
+      return elementoSelecionado;
+    } else {
+      return elementoNãoSelecionado;
+    }
+  };
+
+  const handleChangefilterStatus = (newCategory: string) => {
+    setFilterStatus(newCategory);
+  };
+
+  const filteredOrder = orders.filter((order) => {
+    return order.status === filterStatus;
+  });
 
   useEffect(() => {
     getOrders();
@@ -141,9 +162,40 @@ const MyOrders = () => {
           </div>
         </section>
 
+        <div className="flex items-center justify-center gap-2 py-2 md:py-3">
+          <Button
+            title="Pendente"
+            variant={getfilterStatus("Pendente")}
+            onClick={() => handleChangefilterStatus("Pendente")}
+          />
+          <Button
+            title="Preparando"
+            variant={getfilterStatus("Preparando")}
+            onClick={() => handleChangefilterStatus("Preparando")}
+          />
+
+          <Button
+            title="Retirado/Retirar"
+            variant={getfilterStatus("Retirado")}
+            onClick={() => handleChangefilterStatus("Retirado")}
+          />
+
+          <Button
+            title="Concluido"
+            variant={getfilterStatus("Concluido")}
+            onClick={() => handleChangefilterStatus("Concluido")}
+          />
+
+          <Button
+            title="Cancelado"
+            variant={getfilterStatus("Cancelado")}
+            onClick={() => handleChangefilterStatus("Cancelado")}
+          />
+        </div>
+
         {/* Lista de pedidos */}
-        <section className="space-y-4">
-          {orders.map((pedido) => (
+        <section className="mt-5 space-y-4">
+          {filteredOrder.map((pedido) => (
             <div
               key={pedido.id}
               onClick={() => {
