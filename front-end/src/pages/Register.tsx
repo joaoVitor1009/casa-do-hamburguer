@@ -65,9 +65,6 @@ const Register = () => {
         default:
           setError("");
       }
-
-      const data = await response.json();
-      console.log(data);
     } catch (error) {
       console.log(error);
       return;
