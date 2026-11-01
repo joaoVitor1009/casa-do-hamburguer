@@ -72,7 +72,7 @@ const Login = () => {
     >
       <div className="flex flex-col justify-center gap-3">
         <Link to={"/"}>
-          <img src="./public/logo.png" alt="" className="mx-auto mb-5.75" />
+          <img src="/logo.png" alt="Casa do Hambúrguer" className="mx-auto mb-5.75" />
         </Link>
         <div className="mb-3 flex flex-col gap-2.5">
           <Input
