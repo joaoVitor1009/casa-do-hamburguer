@@ -3,6 +3,15 @@ import bcrypt from "bcrypt";
 import { prisma } from "../db.js";
 import jwt from "jsonwebtoken";
 
+const cookieOptions = {
+  maxAge: 1800000,
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: (process.env.NODE_ENV === "production" ? "none" : "lax") as
+    | "none"
+    | "lax",
+};
+
 export const login = async (req: Request, resp: Response) => {
   try {
     const { email, password } = req.body;
@@ -45,14 +54,7 @@ export const login = async (req: Request, resp: Response) => {
     }
 
     const token = jwt.sign(userInfos, process.env.JWT_SECRET);
-    resp.cookie("user", token, {
-      maxAge: 1800000,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    });
-    resp.cookie("user", token, { maxAge: 1800000 });
-
+    resp.cookie("user", token, cookieOptions);
     resp.status(200).json(userInfos);
   } catch (error) {
     resp.status(500).json({ message: "Server error" });
@@ -104,7 +106,7 @@ export const register = async (req: Request, resp: Response) => {
 
     const token = jwt.sign(userInfos, process.env.JWT_SECRET);
 
-    resp.cookie("user", token, { maxAge: 1800000 });
+    resp.cookie("user", token, cookieOptions);
     resp.status(201).json(userInfos);
   } catch (e) {
     resp.status(500).json({ message: "Server error" });
