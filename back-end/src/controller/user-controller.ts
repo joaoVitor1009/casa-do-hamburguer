@@ -45,7 +45,12 @@ export const login = async (req: Request, resp: Response) => {
     }
 
     const token = jwt.sign(userInfos, process.env.JWT_SECRET);
-
+    resp.cookie("user", token, {
+      maxAge: 1800000,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    });
     resp.cookie("user", token, { maxAge: 1800000 });
 
     resp.status(200).json(userInfos);
