@@ -11,6 +11,7 @@ import {
   createProduct,
   deleteProduct,
   getProduct,
+  updateProduct,
 } from "./controller/product-controller.js";
 import {
   createCartItem,
@@ -48,6 +49,7 @@ router.post(
   upload.single("image"),
   createProduct,
 );
+router.put("/updateProduct/:id", authMiddleware, updateProduct);
 
 //Rotas Cart/Carrinho
 router.get("/getItems", authMiddleware, getCartitems);

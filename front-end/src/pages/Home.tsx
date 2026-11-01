@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Button from "../components/Button";
 import Product from "../components/Product";
 import type { ProductInterface } from "../types/Product";
@@ -6,6 +6,7 @@ import type { ProductInterface } from "../types/Product";
 const home = () => {
   const [category, setCategory] = useState("Burgers");
   const [product, setProduct] = useState<ProductInterface[]>([]);
+  const preloadedImagesRef = useRef<HTMLImageElement[]>([]);
 
   const handleChangeCategory = (newCategory: string) => {
     setCategory(newCategory);
@@ -13,7 +14,6 @@ const home = () => {
 
   const getCategory = (categoryName: string) => {
     const elementoSelecionado = "forty";
-
     const elementoNãoSelecionado = "thirty";
 
     if (category === categoryName) {
@@ -21,6 +21,29 @@ const home = () => {
     } else {
       return elementoNãoSelecionado;
     }
+  };
+
+  const preloadAllImages = (products: ProductInterface[]) => {
+    const loadedImages: HTMLImageElement[] = [];
+
+    products.forEach((p) => {
+      if (!p.img) return;
+
+      const img = new Image();
+      const imageUrl = p.img.startsWith("http")
+        ? p.img
+        : p.img.startsWith("/")
+          ? p.img
+          : `/${p.img}`;
+
+      img.src = imageUrl;
+      // img.decode() força o download e a descompactação na placa de vídeo na hora!
+      img.decode().catch(() => {});
+      loadedImages.push(img);
+    });
+
+    // Mantém as instâncias vivas na memória RAM
+    preloadedImagesRef.current = loadedImages;
   };
 
   const getProduct = async () => {
@@ -34,15 +57,12 @@ const home = () => {
 
       const data = await response.json();
       setProduct(data);
+      preloadAllImages(data);
     } catch (e) {
       console.log(e);
       return;
     }
   };
-
-  const filteredProduct = product.filter((product) => {
-    return product.category === category;
-  });
 
   useEffect(() => {
     getProduct();
@@ -68,21 +88,30 @@ const home = () => {
         />
       </div>
 
-      <p className="mt-2 mb-2 text-[14px] font-bold uppercase md:text-[18px]">
+      <p
+        key={category}
+        className="mt-2 mb-2 text-[14px] font-bold uppercase animate-fade-in md:text-[18px]"
+      >
         {category}
       </p>
       <div className="flex flex-col gap-3 md:gap-3">
-        {filteredProduct.map((product) => (
-          <Product
-            description={product.description}
-            id={product.id}
-            img={product.img}
-            name={product.name}
-            price={product.price}
-            category={product.category}
-            key={product.id}
-            getProducts={getProduct}
-          />
+        {product.map((item) => (
+          <div
+            key={item.id}
+            className={
+              item.category === category ? "block animate-fade-in" : "hidden"
+            }
+          >
+            <Product
+              description={item.description}
+              id={item.id}
+              img={item.img}
+              name={item.name}
+              price={item.price}
+              category={item.category}
+              getProducts={getProduct}
+            />
+          </div>
         ))}
       </div>
     </div>

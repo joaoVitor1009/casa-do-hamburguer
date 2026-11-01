@@ -1,5 +1,6 @@
 import { type Request, type Response } from "express";
 import { prisma } from "../db.js";
+import { match } from "node:assert";
 
 export const getProduct = async (req: Request, resp: Response) => {
   try {
@@ -101,3 +102,41 @@ export async function createProduct(req: Request, resp: Response) {
     });
   }
 }
+
+export const updateProduct = async (
+  req: Request<{ id: string }>,
+  resp: Response,
+) => {
+  try {
+    const { id } = req.params;
+    const { user } = req;
+    const { name, description, price, category } = req.body;
+    const priceArounded = Math.round(price);
+    if (!user?.admin) {
+      return resp.status(401).json({ message: "Não autorizado" });
+    }
+
+    const find = await prisma.product.findFirst({
+      where: { id: id },
+    });
+
+    if (!find) {
+      return resp.status(404).json({ message: "Produto não encontrado" });
+    }
+
+    await prisma.product.update({
+      where: { id: id },
+      data: {
+        name,
+        description,
+        price: priceArounded,
+        category,
+      },
+    });
+
+    return resp.status(200).json({ message: "Sucesso na operação" });
+  } catch (e) {
+    console.log("Erro na operação");
+    return resp.status(500).json({ message: "Erro no servidor" });
+  }
+};
