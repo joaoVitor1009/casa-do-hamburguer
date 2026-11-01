@@ -8,7 +8,7 @@
     "start:dist": "npx tsx src/index.ts",
     "start:watch": "tsx watch --env-file=.env src/index.ts",
     "start:dev": "npm run dist && node dist/index.js",
-    "build": "prisma generate && tsup src --format esm",
+    "build": "npx prisma generate && npx tsup src --format esm",
     "start": "node dist/index.js"
   },
   "keywords": [],
@@ -23,10 +23,7 @@
     "@types/multer": "^2.2.0",
     "@types/node": "^26.2.0",
     "@types/pg": "^8.23.1",
-    "prisma": "^7.9.1",
-    "tsup": "^8.5.1",
-    "tsx": "^4.23.12",
-    "typescript": "^7.0.2"
+    "tsx": "^4.23.12"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.9.1",
@@ -39,6 +36,9 @@
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.3.0",
-    "pg": "^8.23.0"
+    "pg": "^8.23.0",
+    "prisma": "^7.9.1",
+    "tsup": "^8.5.1",
+    "typescript": "^7.0.2"
   }
 }
