@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Button from "../components/Button";
 
 import CardOrder from "../components/CarOrder";
-import { base, formatterPrice } from "../utils/FormatterPrice";
+import { API_URL } from "../utils/api";
 import type { UserInterface } from "../types/User";
 import type { ProductInterface } from "../types/Product";
 import { Calendar, X, FileSpreadsheet } from "lucide-react";
@@ -52,7 +52,7 @@ const Orders = () => {
   };
 
   async function getOrders() {
-    const response = await fetch(base + "getOrders", {
+    const response = await fetch(`${API_URL}/getOrders`, {
       credentials: "include",
     });
 
@@ -130,7 +130,7 @@ const Orders = () => {
   useEffect(() => {
     getOrders();
 
-    const eventSource = new EventSource(base + "admin-events", {
+    const eventSource = new EventSource(`${API_URL}/admin-events`, {
       withCredentials: true,
     });
 

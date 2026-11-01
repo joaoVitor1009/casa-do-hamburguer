@@ -11,7 +11,8 @@ import {
   Check,
 } from "lucide-react";
 
-import { base, formatterPrice } from "../utils/FormatterPrice";
+import { API_URL } from "../utils/api";
+import { formatterPrice } from "../utils/FormatterPrice";
 import type { ProductInterface } from "../types/Product";
 import { toast } from "sonner";
 
@@ -54,7 +55,7 @@ const CardOrder = ({
   getOrders,
 }: cardPedidoType) => {
   async function handleUpdateStatus(novoStatus: string) {
-    const response = await fetch(base + `updateStatus/${id}`, {
+    const response = await fetch(`${API_URL}/updateStatus/${id}`, {
       method: "PUT",
       credentials: "include",
       headers: {
