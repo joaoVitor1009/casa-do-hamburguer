@@ -1,3 +1,4 @@
+import { API_URL } from "../utils/api";
 import { useContext, useState } from "react";
 import Input from "../components/Input";
 import { Link, useNavigate } from "react-router";
@@ -32,7 +33,7 @@ const Register = () => {
         return;
       }
 
-      const response = await fetch("http://localhost:3000/register", {
+      const response = await fetch(`${API_URL}/register`, {
         method: "POST",
         headers: { "Content-type": "application/json" },
         body: JSON.stringify({ name, email, password, cep }),

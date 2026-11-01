@@ -1,3 +1,4 @@
+import { API_URL } from "../utils/api";
 import { Plus, X } from "lucide-react";
 import Button from "./Button";
 import { useRef, useState } from "react";
@@ -46,7 +47,7 @@ const CardProduct = ({
         formData.append("image", productImage);
       }
 
-      const response = await fetch("http://localhost:3000/createProduct", {
+      const response = await fetch(`${API_URL}/createProduct`, {
         method: "POST",
         credentials: "include",
         body: formData,
@@ -74,7 +75,7 @@ const CardProduct = ({
   const handleUpdateProduct = async () => {
     try {
       const response = await fetch(
-        `http://localhost:3000/updateProduct/${productToEdit?.id}`,
+        `${API_URL}/updateProduct/${productToEdit?.id}`,
         {
           method: "PUT",
           credentials: "include",

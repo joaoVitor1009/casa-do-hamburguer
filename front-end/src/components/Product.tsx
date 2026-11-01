@@ -1,3 +1,4 @@
+import { API_URL } from "../utils/api";
 import { AlertTriangle, Check, ShoppingBag } from "lucide-react";
 import type { Productpros } from "../types/Product";
 import { formatterPrice } from "../utils/FormatterPrice";
@@ -30,7 +31,7 @@ const Product = ({
 
   const handleDeleteProduct = async (id: any) => {
     try {
-      const rotaDelete = "http://localhost:3000/deleteProduct/" + id;
+      const rotaDelete = `${API_URL}/deleteProduct/` + id;
 
       if (!rotaDelete) {
         console.log("Sem id enviado");
@@ -63,7 +64,7 @@ const Product = ({
 
   const newCartItem = async () => {
     try {
-      const response = await fetch("http://localhost:3000/createCartitem", {
+      const response = await fetch(`${API_URL}/createCartitem`, {
         method: "POST",
         headers: { "Content-type": "application/json" },
         credentials: "include",

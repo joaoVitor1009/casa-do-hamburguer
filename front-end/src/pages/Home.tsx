@@ -1,3 +1,4 @@
+import { API_URL } from "../utils/api";
 import { useEffect, useRef, useState } from "react";
 import Button from "../components/Button";
 import Product from "../components/Product";
@@ -48,7 +49,7 @@ const home = () => {
 
   const getProduct = async () => {
     try {
-      const response = await fetch("http://localhost:3000/getProduct");
+      const response = await fetch(`${API_URL}/getProduct`);
 
       if (!response.ok) {
         setProduct([]);

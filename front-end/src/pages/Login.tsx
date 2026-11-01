@@ -1,3 +1,4 @@
+import { API_URL } from "../utils/api";
 import { useState } from "react";
 import Input from "../components/Input";
 import { Link } from "react-router";
@@ -26,7 +27,7 @@ const Login = () => {
         return;
       }
 
-      const response = await fetch("http://localhost:3000/login", {
+      const response = await fetch(`${API_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

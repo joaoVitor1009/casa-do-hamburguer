@@ -1,3 +1,4 @@
+import { API_URL } from "../utils/api";
 import { ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
 import { formatterPrice } from "../utils/FormatterPrice";
 
@@ -21,7 +22,7 @@ const CartItem = ({
   async function handleDeleteItem(id: string) {
     try {
       const response = await fetch(
-        `http://localhost:3000/deleteCartitem/${id}`,
+        `${API_URL}/deleteCartitem/${id}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -47,7 +48,7 @@ const CartItem = ({
         return;
       }
       const response = await fetch(
-        `http://localhost:3000/updateCartItem/${id}`,
+        `${API_URL}/updateCartItem/${id}`,
         {
           method: "PUT",
           headers: {

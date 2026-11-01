@@ -1,3 +1,4 @@
+import { API_URL } from "../utils/api";
 import {
   ArrowLeft,
   LockKeyhole,
@@ -38,7 +39,7 @@ const UserUpdate = () => {
       }
       const emailLower = email.toLowerCase();
       const response = await fetch(
-        `http://localhost:3000/updateDataUser/${user?.id}`,
+        `${API_URL}/updateDataUser/${user?.id}`,
         {
           method: "PUT",
           headers: { "Content-type": "application/json" },

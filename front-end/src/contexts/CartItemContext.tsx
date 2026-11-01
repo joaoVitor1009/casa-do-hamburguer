@@ -1,3 +1,4 @@
+import { API_URL } from "../utils/api";
 import { createContext, useState, type ReactNode } from "react";
 import type {
   CartItemInterface,
@@ -15,7 +16,7 @@ export const CartItemProvider = ({ children }: { children: ReactNode }) => {
   const [cartItems, setCartItems] = useState<CartItemInterface[]>([]);
   const getCartItems = async () => {
     try {
-      const response = await fetch("http://localhost:3000/getItems", {
+      const response = await fetch(`${API_URL}/getItems`, {
         credentials: "include",
       });
 

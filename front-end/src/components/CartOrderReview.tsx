@@ -1,3 +1,4 @@
+import { API_URL } from "../utils/api";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { CartItemContext } from "../contexts/CartItemContext";
 import { useContext, useState } from "react";
@@ -30,7 +31,7 @@ export const CartOrderReview = ({
         return;
       }
       const response = await fetch(
-        `http://localhost:3000/updateCartItem/${id}`,
+        `${API_URL}/updateCartItem/${id}`,
         {
           method: "PUT",
           headers: {
@@ -56,7 +57,7 @@ export const CartOrderReview = ({
   async function handleDeleteItem(id: string) {
     try {
       const response = await fetch(
-        `http://localhost:3000/deleteCartitem/${id}`,
+        `${API_URL}/deleteCartitem/${id}`,
         {
           method: "DELETE",
           credentials: "include",

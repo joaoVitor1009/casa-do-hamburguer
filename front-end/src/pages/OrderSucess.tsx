@@ -1,3 +1,4 @@
+import { API_URL } from "../utils/api";
 import { useContext, useEffect, useState } from "react";
 import { Link, useLocation, useParams } from "react-router";
 import { UserContext } from "../contexts/UserContext";
@@ -58,7 +59,7 @@ const OrderSucess = () => {
 
   const loadOrderData = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/getOrder/${id}`, {
+      const response = await fetch(`${API_URL}/getOrder/${id}`, {
         credentials: "include",
       });
 
@@ -85,7 +86,7 @@ const OrderSucess = () => {
   useEffect(() => {
     async function fetchOrder() {
       try {
-        const response = await fetch(`http://localhost:3000/getOrder/${id}`, {
+        const response = await fetch(`${API_URL}/getOrder/${id}`, {
           credentials: "include",
         });
         const data = await response.json();
@@ -103,7 +104,7 @@ const OrderSucess = () => {
     if (!user?.id || !id) return;
 
     const eventSource = new EventSource(
-      `http://localhost:3000/order-events/${user.id}`,
+      `${API_URL}/order-events/${user.id}`,
       { withCredentials: true },
     );
 

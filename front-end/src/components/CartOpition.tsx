@@ -1,3 +1,4 @@
+import { API_URL } from "../utils/api";
 import { X, User, ClipboardList, LogOut, ChevronRight } from "lucide-react";
 import { useContext } from "react";
 import { useNavigate } from "react-router";
@@ -14,7 +15,7 @@ const CartOptional = ({ setShowCartOption, showCartOption }: cartTypes) => {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("http://localhost:3000/logout", {
+      const response = await fetch(`${API_URL}/logout`, {
         method: "POST",
         credentials: "include",
       });

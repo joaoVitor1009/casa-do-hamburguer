@@ -1,3 +1,4 @@
+import { API_URL } from "../utils/api";
 import { X } from "lucide-react";
 import Button from "./Button";
 import CartItem from "./CartItem";
@@ -18,7 +19,7 @@ const Cart = ({ setShowCart, showCart }: cartTypes) => {
 
   const getCartItems = async () => {
     try {
-      const response = await fetch("http://localhost:3000/getItems", {
+      const response = await fetch(`${API_URL}/getItems`, {
         credentials: "include",
       });
 

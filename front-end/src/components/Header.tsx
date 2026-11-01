@@ -1,3 +1,4 @@
+import { API_URL } from "../utils/api";
 import { Link, useLocation } from "react-router";
 import { UserContext } from "../contexts/UserContext";
 import { useContext, useEffect, useState, useRef } from "react";
@@ -26,7 +27,7 @@ const Header = () => {
 
   const handleAuthUser = async () => {
     try {
-      const response = await fetch("http://localhost:3000/me", {
+      const response = await fetch(`${API_URL}/me`, {
         credentials: "include",
       });
 
@@ -47,7 +48,7 @@ const Header = () => {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("http://localhost:3000/logout", {
+      const response = await fetch(`${API_URL}/logout`, {
         method: "POST",
         credentials: "include",
       });

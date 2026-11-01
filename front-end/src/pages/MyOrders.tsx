@@ -1,3 +1,4 @@
+import { API_URL } from "../utils/api";
 import {
   ArrowLeft,
   ChevronRight,
@@ -56,7 +57,7 @@ const MyOrders = () => {
 
   const getOrders = async () => {
     try {
-      const response = await fetch("http://localhost:3000/getOrdersById", {
+      const response = await fetch(`${API_URL}/getOrdersById`, {
         method: "GET",
         credentials: "include",
       });
@@ -102,7 +103,7 @@ const MyOrders = () => {
     if (!user?.id) return;
 
     const eventSource = new EventSource(
-      `http://localhost:3000/order-events/${user.id}`,
+      `${API_URL}/order-events/${user.id}`,
       { withCredentials: true },
     );
 

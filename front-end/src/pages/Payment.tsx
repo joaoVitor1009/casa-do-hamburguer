@@ -1,3 +1,4 @@
+import { API_URL } from "../utils/api";
 import { useState, useContext } from "react";
 import { Link, useNavigate, useLocation } from "react-router";
 import {
@@ -38,7 +39,7 @@ const Payment = () => {
           formaPagamentoFinal = `Na entrega (${opcaoEntrega})`;
         }
       }
-      const response = await fetch("http://localhost:3000/createOrders", {
+      const response = await fetch(`${API_URL}/createOrders`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
